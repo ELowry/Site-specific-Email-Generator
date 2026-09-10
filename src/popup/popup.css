@@ -1,0 +1,91 @@
+@import url(../vars.css);
+
+body {
+	align-items: stretch;
+	margin: 0;
+	padding: 16px;
+	width: 320px;
+}
+
+.popup-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 16px;
+}
+
+svg {
+	width: 1.4em;
+	height: 1.4em;
+}
+
+h1 {
+	margin: 0;
+	font-size: 18px;
+}
+
+.settings-btn {
+	transition: color 0.2s;
+	cursor: pointer;
+	border: none;
+	background: none;
+	padding: 4px;
+	color: var(--text-subtitle);
+
+	&:hover {
+		color: var(--btn-primary-bg);
+	}
+}
+
+.alias-list {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	margin-bottom: 12px;
+}
+
+.alias-card {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	transition: border-color 0.2s;
+	border: 1px solid var(--input-border);
+	border-radius: 8px;
+	background: var(--input-bg);
+	padding: 10px 12px;
+
+	&:hover {
+		border-color: var(--input-focus-border);
+	}
+}
+
+.alias-email {
+	flex: 1;
+	padding-right: 12px;
+	color: var(--input-text);
+	font-size: 13px;
+	font-family: monospace;
+	word-break: break-all;
+}
+
+.copy-icon-btn {
+	display: flex;
+	flex-shrink: 0;
+	justify-content: center;
+	align-items: center;
+	transition: background-color 0.2s;
+	cursor: pointer;
+	border: none;
+	border-radius: 6px;
+	background: var(--btn-primary-bg);
+	padding: 8px;
+	color: var(--btn-primary-text);
+
+	&:hover {
+		background: var(--btn-primary-hover);
+	}
+
+	&.success {
+		background: var(--status-success-color);
+	}
+}
