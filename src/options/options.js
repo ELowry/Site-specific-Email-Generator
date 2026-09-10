@@ -1,75 +1,74 @@
-import { getStorage } from '../utils.js';
+import { Feedback } from '../feedback.js';
+import { Utils } from '../utils.js';
 
 /**
- * Controller for managing extension preferences, custom domain lists, and sync options.
+ * Manages preferences, custom domain lists, and sync options.
  */
 class OptionsController {
 	/** @type {HTMLInputElement|null} */
-	#newDomainInput = null;
+	#newDomainInput;
 
 	/** @type {HTMLInputElement|null} */
-	#newPrefixInput = null;
+	#newPrefixInput;
 
 	/** @type {HTMLElement|null} */
-	#statusDiv = null;
-
-	/** @type {HTMLElement|null} */
-	#domainListContainer = null;
+	#domainListContainer;
 
 	/** @type {HTMLButtonElement|null} */
-	#addDomainBtn = null;
+	#addDomainBtn;
 
-	/** @type {HTMLInputElement|null} */
-	#useSyncToggle = null;
+	/** @type {HTMLButtonElement|null} */
+	#useSyncToggle;
 
-	/** @type {HTMLInputElement|null} */
-	#includeTldToggle = null;
+	/** @type {HTMLButtonElement|null} */
+	#includeTldToggle;
 
 	/** @type {HTMLTemplateElement|null} */
-	#deleteIconTemplate = null;
+	#deleteIconTemplate;
+
+	/** @type {HTMLTemplateElement|null} */
+	#dragIconTemplate;
 
 	/** @type {Array<{domain: string, prefix: string}>} */
-	#domains = [];
+	#domains;
 
-	/**
-	 * Creates an instance of OptionsController.
-	 */
+	/** @type {number|null} */
+	#dragSourceIndex;
+
 	constructor() {
+		this.#newDomainInput = null;
+		this.#newPrefixInput = null;
+		this.#domainListContainer = null;
+		this.#addDomainBtn = null;
+		this.#useSyncToggle = null;
+		this.#includeTldToggle = null;
+		this.#deleteIconTemplate = null;
+		this.#dragIconTemplate = null;
 		this.#domains = [];
+		this.#dragSourceIndex = null;
 	}
 
 	/**
-	 * Duration in milliseconds for displaying status feedback messages.
-	 *
-	 * @constant
-	 * @returns {number} Duration in ms.
-	 */
-	static get STATUS_DURATION() {
-		return 2000;
-	}
-
-	/**
-	 * Initializes element references, registers events, and restores saved configurations.
-	 *
+	 * Initializes references, registers event listeners, and loads configuration.
 	 * @returns {void}
 	 */
 	init() {
-		this.#newDomainInput = document.querySelector('#domain-entry-field');
-		this.#newPrefixInput = document.querySelector('#new-prefix-input');
-		this.#statusDiv = document.querySelector('#feedback-message-box');
-		this.#domainListContainer = document.querySelector('#saved-aliases-grid');
-		this.#addDomainBtn = document.querySelector('#register-domain-button');
-		this.#useSyncToggle = document.querySelector('#use-sync-toggle');
-		this.#includeTldToggle = document.querySelector('#include-tld-toggle');
-		this.#deleteIconTemplate = document.querySelector('#template-delete-icon');
+		this.#newDomainInput = document.querySelector('#DomainInput');
+		this.#newPrefixInput = document.querySelector('#PrefixInput');
+		this.#domainListContainer = document.querySelector('#SavedDomains');
+		this.#addDomainBtn = document.querySelector('#AddDomainButton');
+		this.#useSyncToggle = document.querySelector('#UseSyncToggle');
+		this.#includeTldToggle = document.querySelector('#IncludeTLDToggle');
+		this.#deleteIconTemplate = document.querySelector('#template-deleteIcon');
+		this.#deleteIconTemplate = document.querySelector('#template-deleteIcon');
+		this.#dragIconTemplate = document.querySelector('#template-dragIcon');
 
 		this.#setupEventListeners();
 		this.#restoreOptions();
 	}
 
 	/**
-	 * Renders the configured domains list in the DOM.
-	 *
+	 * Renders the configured domains list.
 	 * @returns {void}
 	 */
 	render() {
@@ -78,6 +77,9 @@ class OptionsController {
 		}
 
 		this.#domainListContainer.replaceChildren();
+
+		const canDrag = this.#domains.length > 1;
+
 		this.#domains.forEach((item, index) => {
 			const domainName = item.domain || item;
 			const prefixStr = item.prefix || '';
@@ -85,15 +87,37 @@ class OptionsController {
 			const container = document.createElement('div');
 			container.className = 'domain-item';
 
-			const text = document.createElement('span');
-			text.className = 'domain-text';
-			text.textContent = prefixStr
-				? `${prefixStr}[site]@${domainName}`
-				: `[site]@${domainName}`;
+			if (canDrag) {
+				container.draggable = true;
+			}
+
+			let dragHandle = null;
+			if (canDrag) {
+				dragHandle = document.createElement('div');
+				dragHandle.className = 'drag-handle';
+				if (this.#dragIconTemplate) {
+					dragHandle.appendChild(this.#dragIconTemplate.content.cloneNode(true));
+				}
+			}
+
+			const entry = document.createElement('p');
+			entry.className = 'domain-text';
+
+			if (prefixStr) {
+				entry.appendChild(document.createTextNode(prefixStr));
+			}
+
+			const siteIndicator = document.createElement('span');
+			siteIndicator.className = 'site-indicator';
+			siteIndicator.textContent = '[site]';
+
+			entry.appendChild(siteIndicator);
+			entry.appendChild(document.createTextNode(`@${domainName}`));
 
 			const deleteButton = document.createElement('button');
-			deleteButton.className = 'delete-btn';
+			deleteButton.className = 'btn-primary icon-only delete-btn';
 			deleteButton.title = 'Delete domain';
+			deleteButton.setAttribute('aria-label', `Delete ${domainName}`);
 
 			if (this.#deleteIconTemplate) {
 				deleteButton.appendChild(this.#deleteIconTemplate.content.cloneNode(true));
@@ -103,51 +127,112 @@ class OptionsController {
 				this.#deleteDomain(index);
 			});
 
-			container.appendChild(text);
+			if (canDrag) {
+				container.addEventListener('dragstart', (event) => {
+					this.#dragSourceIndex = index;
+					if (event.dataTransfer) {
+						event.dataTransfer.effectAllowed = 'move';
+						event.dataTransfer.setData('application/x-domain-index', String(index));
+					}
+					setTimeout(() => {
+						container.classList.add('is-dragging');
+					}, 0);
+				});
+
+				container.addEventListener('dragenter', (event) => {
+					event.preventDefault();
+				});
+
+				container.addEventListener('dragover', (event) => {
+					event.preventDefault();
+					if (event.dataTransfer) {
+						event.dataTransfer.dropEffect = 'move';
+					}
+
+					const bounding = container.getBoundingClientRect();
+					const offset = bounding.y + bounding.height / 2;
+					if (event.clientY - offset > 0) {
+						container.style.borderBottom =
+							'var(--border-width) solid var(--color-accent)';
+						container.style.borderTop = '';
+					} else {
+						container.style.borderTop = 'var(--border-width) solid var(--color-accent)';
+						container.style.borderBottom = '';
+					}
+				});
+
+				container.addEventListener('dragleave', (event) => {
+					if (container.contains(event.relatedTarget)) {
+						return;
+					}
+					container.style.borderTop = '';
+					container.style.borderBottom = '';
+				});
+
+				container.addEventListener('drop', (event) => {
+					event.preventDefault();
+					container.style.borderTop = '';
+					container.style.borderBottom = '';
+
+					if (this.#dragSourceIndex === null || this.#dragSourceIndex === index) {
+						return;
+					}
+
+					const bounding = container.getBoundingClientRect();
+					const offset = bounding.y + bounding.height / 2;
+
+					let insertIndex = index;
+					if (event.clientY - offset > 0) {
+						insertIndex = index + 1;
+					}
+
+					const itemToMove = this.#domains.splice(this.#dragSourceIndex, 1)[0];
+					if (this.#dragSourceIndex < insertIndex) {
+						insertIndex--;
+					}
+					this.#domains.splice(insertIndex, 0, itemToMove);
+
+					this.#saveDomains();
+					this.render();
+				});
+
+				container.addEventListener('dragend', () => {
+					container.classList.remove('is-dragging');
+					this.#dragSourceIndex = null;
+
+					if (this.#domainListContainer) {
+						const items = this.#domainListContainer.querySelectorAll('.domain-item');
+						items.forEach((element) => {
+							element.style.borderTop = '';
+							element.style.borderBottom = '';
+						});
+					}
+				});
+			}
+
+			if (dragHandle) {
+				container.appendChild(dragHandle);
+			}
+			container.appendChild(entry);
 			container.appendChild(deleteButton);
 			this.#domainListContainer.appendChild(container);
 		});
 	}
 
 	/**
-	 * Displays temporary feedback message in the status container.
-	 *
+	 * Saves domains to the currently selected storage location.
 	 * @private
-	 * @param {string} message - Message text.
-	 * @param {'success'|'error'} [type='success'] - Message type determining display color.
-	 * @returns {void}
-	 */
-	#showStatus(message, type = 'success') {
-		if (!this.#statusDiv) {
-			return;
-		}
-
-		this.#statusDiv.textContent = message;
-		this.#statusDiv.style.color =
-			type === 'error' ? 'var(--status-error-color)' : 'var(--status-success-color)';
-
-		setTimeout(() => {
-			if (this.#statusDiv) {
-				this.#statusDiv.textContent = '';
-			}
-		}, OptionsController.STATUS_DURATION);
-	}
-
-	/**
-	 * Persists domains to the active storage location.
-	 *
-	 * @private
-	 * @returns {Promise<void>} Resolves when saved.
+	 * @returns {Promise<void>} when saved.
 	 */
 	async #saveDomains() {
-		const storage = await getStorage();
+		const storage = await Utils.getStorage();
 		await storage.set({ aliasDomains: this.#domains });
-		this.#showStatus('Domains updated');
+
+		Feedback.showMessage('Domains updated', { type: 'success', targetId: 'DomainsFeedback' });
 	}
 
 	/**
-	 * Validates input and adds a new domain entry to the configuration.
-	 *
+	 * Tries to add a new domain entry.
 	 * @private
 	 * @returns {void}
 	 */
@@ -170,31 +255,37 @@ class OptionsController {
 		const prefixVal = this.#newPrefixInput.value.trim();
 
 		if (!domainVal) {
-			this.#showStatus('Please enter a domain', 'error');
+			Feedback.showMessage('Please enter a domain', {
+				type: 'error',
+				targetId: 'DomainsFeedback',
+			});
 			return;
 		}
 
-		const exists = this.#domains.some((item) => {
-			return (item.domain || item) === domainVal;
+		const exists = this.#domains.some((entry) => {
+			return entry.domain === domainVal && entry.prefix === prefixVal;
 		});
 
 		if (exists) {
-			this.#showStatus('Domain already exists', 'error');
+			Feedback.showMessage('Domain and prefix combination already exists', {
+				type: 'error',
+				targetId: 'DomainsFeedback',
+			});
 			return;
 		}
 
 		this.#domains.push({ domain: domainVal, prefix: prefixVal });
 		this.#newDomainInput.value = '';
 		this.#newPrefixInput.value = '';
+
 		this.render();
 		this.#saveDomains();
 	}
 
 	/**
-	 * Removes a domain entry by its index.
-	 *
+	 * Removes a domain entry.
 	 * @private
-	 * @param {number} index - Index in the domain array.
+	 * @param {number} index - Array index of the entry to remove.
 	 * @returns {void}
 	 */
 	#deleteDomain(index) {
@@ -204,27 +295,32 @@ class OptionsController {
 	}
 
 	/**
-	 * Loads options from browser storage and updates UI controls.
-	 *
+	 * Retrieves options from browser storage and updates the UI.
 	 * @private
-	 * @returns {Promise<void>} Resolves when restored.
+	 * @returns {Promise<void>} when restored.
 	 */
 	async #restoreOptions() {
 		const localPrefs = await browser.storage.local.get('useSync');
+
 		if (this.#useSyncToggle) {
-			this.#useSyncToggle.checked = Boolean(localPrefs.useSync);
+			this.#useSyncToggle.setAttribute('aria-checked', String(Boolean(localPrefs.useSync)));
 		}
 
-		const storage = await getStorage();
+		const storage = await Utils.getStorage();
+
 		try {
 			const result = await storage.get(['aliasDomains', 'includeTld']);
 			const rawDomains = result.aliasDomains || [];
+
 			this.#domains = rawDomains.map((item) => {
 				return typeof item === 'string' ? { domain: item, prefix: '' } : item;
 			});
 
 			if (this.#includeTldToggle) {
-				this.#includeTldToggle.checked = result.includeTld !== false;
+				this.#includeTldToggle.setAttribute(
+					'aria-checked',
+					String(result.includeTld !== false)
+				);
 			}
 
 			this.render();
@@ -234,29 +330,27 @@ class OptionsController {
 	}
 
 	/**
-	 * Persists general extension settings such as TLD inclusion.
-	 *
+	 * Saves extension settings.
 	 * @private
-	 * @returns {Promise<void>} Resolves when saved.
+	 * @returns {Promise<void>} when saved.
 	 */
 	async #saveSettings() {
-		const storage = await getStorage();
-		const includeTld = this.#includeTldToggle ? this.#includeTldToggle.checked : true;
+		const storage = await Utils.getStorage();
+		const includeTld = this.#includeTldToggle
+			? this.#includeTldToggle.getAttribute('aria-checked') === 'true'
+			: true;
+
 		await storage.set({ includeTld });
-		this.#showStatus('Settings saved');
+		Feedback.showMessage('Settings saved', { type: 'success', targetId: 'SettingsFeedback' });
 	}
 
 	/**
-	 * Handles toggling sync preferences and migrating data between sync and local storage.
-	 *
+	 * Toggles sync preferences and migrates data between sync and local storage.
 	 * @private
-	 * @param {Event} event - Change event.
-	 * @returns {Promise<void>} Resolves when migration completes.
+	 * @param {boolean} enableSync - Whether to use Firefox Sync.
+	 * @returns {Promise<void>} when migration completes.
 	 */
-	async #handleSyncToggle(event) {
-		const target = /** @type {HTMLInputElement} */ (event.target);
-		const enableSync = target.checked;
-
+	async #handleSyncToggle(enableSync) {
 		const oldStorage = enableSync ? browser.storage.local : browser.storage.sync;
 		const newStorage = enableSync ? browser.storage.sync : browser.storage.local;
 
@@ -270,19 +364,33 @@ class OptionsController {
 		}
 
 		await browser.storage.local.set({ useSync: enableSync });
-		this.#showStatus(enableSync ? 'Sync enabled' : 'Sync disabled');
+		Feedback.showMessage(enableSync ? 'Sync enabled' : 'Sync disabled', {
+			type: 'success',
+			targetId: 'SettingsFeedback',
+		});
 	}
 
 	/**
-	 * Attaches event listeners to interactive controls.
-	 *
+	 * Sets up event listeners.
 	 * @private
 	 * @returns {void}
 	 */
 	#setupEventListeners() {
 		if (this.#useSyncToggle) {
-			this.#useSyncToggle.addEventListener('change', (event) => {
-				this.#handleSyncToggle(event);
+			this.#useSyncToggle.addEventListener('click', () => {
+				const currentState = this.#useSyncToggle.getAttribute('aria-checked') === 'true';
+				const newState = !currentState;
+				this.#useSyncToggle.setAttribute('aria-checked', String(newState));
+				this.#handleSyncToggle(newState);
+			});
+		}
+
+		if (this.#includeTldToggle) {
+			this.#includeTldToggle.addEventListener('click', () => {
+				const currentState = this.#includeTldToggle.getAttribute('aria-checked') === 'true';
+				const newState = !currentState;
+				this.#includeTldToggle.setAttribute('aria-checked', String(newState));
+				this.#saveSettings();
 			});
 		}
 
@@ -299,16 +407,11 @@ class OptionsController {
 				}
 			});
 		}
-
-		if (this.#includeTldToggle) {
-			this.#includeTldToggle.addEventListener('change', () => {
-				this.#saveSettings();
-			});
-		}
 	}
 }
 
-const Options = new OptionsController();
+export const Options = new OptionsController();
+
 document.addEventListener('DOMContentLoaded', () => {
 	Options.init();
 });

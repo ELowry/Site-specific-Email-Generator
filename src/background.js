@@ -1,46 +1,51 @@
+import { Utils } from './utils.js';
+
 /**
- * Controller for extension background operations, context menus, and messaging.
+ * Extension background operations, context menus, and messaging.
  */
 class BackgroundController {
-	/**
-	 * Creates an instance of BackgroundController.
-	 */
 	constructor() {}
 
 	/**
-	 * Context menu ID for configuring the extension.
-	 *
+	 * Configuration context menu ID.
 	 * @constant
-	 * @returns {string} The menu item ID.
+	 * @returns {string} the menu item ID.
 	 */
 	static get CONFIGURE_MENU_ID() {
-		return 'open-settings-menu';
+		return 'OpenSettingsMenu';
 	}
 
 	/**
-	 * Context menu parent ID for multiple domains.
-	 *
+	 * Domains context menu parent ID.
 	 * @constant
-	 * @returns {string} The parent menu item ID.
+	 * @returns {string} the parent menu item ID.
 	 */
 	static get PARENT_MENU_ID() {
-		return 'alias-generation-parent';
+		return 'DomainGenerationParent';
 	}
 
 	/**
-	 * Prefix used for domain menu item IDs.
-	 *
+	 * Domain menu item IDs prefix.
 	 * @constant
-	 * @returns {string} The prefix string.
+	 * @returns {string} the prefix string.
 	 */
 	static get FILL_PREFIX() {
 		return 'inject-alias-';
 	}
 
 	/**
-	 * Initializes event listeners and sets up context menus.
-	 *
-	 * @returns {Promise<void>} Resolves when initialization completes.
+	 * Generates a context menu ID for a specific domain.
+	 * @private
+	 * @param {string} domainName - The domain name to append.
+	 * @returns {string} the menu item ID.
+	 */
+	static #getDomainMenuId(domainName) {
+		return `${BackgroundController.FILL_PREFIX}${domainName}`;
+	}
+
+	/**
+	 * Initializes event listeners and context menus.
+	 * @returns {Promise<void>} when init completes.
 	 */
 	async init() {
 		this.#setupListeners();
@@ -48,19 +53,7 @@ class BackgroundController {
 	}
 
 	/**
-	 * Resolves active storage area based on synchronization preference.
-	 *
-	 * @private
-	 * @returns {Promise<browser.storage.StorageArea>} Active storage area.
-	 */
-	async #getStorage() {
-		const { useSync } = await browser.storage.local.get('useSync');
-		return useSync ? browser.storage.sync : browser.storage.local;
-	}
-
-	/**
-	 * Handles runtime errors during menu creation.
-	 *
+	 * Handles menu creation errors.
 	 * @private
 	 * @returns {void}
 	 */
@@ -71,11 +64,10 @@ class BackgroundController {
 	}
 
 	/**
-	 * Rebuilds context menus based on available custom domains.
-	 *
+	 * Rebuilds context menus for custom domains.
 	 * @private
-	 * @param {Array<{domain: string, prefix?: string}>} domains - List of configured domains.
-	 * @returns {Promise<void>} Resolves when menus are updated.
+	 * @param {Array<{domain: string, prefix?: string}>} domains - List of custom domains.
+	 * @returns {Promise<void>} when updated.
 	 */
 	async #updateContextMenus(domains) {
 		await browser.contextMenus.removeAll();
@@ -105,7 +97,7 @@ class BackgroundController {
 			const prefix = domainItem.prefix || '';
 			browser.contextMenus.create(
 				{
-					id: `${BackgroundController.FILL_PREFIX}${domainName}`,
+					id: BackgroundController.#getDomainMenuId(domainName),
 					title: prefix
 						? `Generate Alias (${prefix}[site]@${domainName})`
 						: 'Generate Email Alias',
@@ -137,7 +129,7 @@ class BackgroundController {
 			const prefix = domainItem.prefix || '';
 			browser.contextMenus.create(
 				{
-					id: `${BackgroundController.FILL_PREFIX}${domainName}`,
+					id: BackgroundController.#getDomainMenuId(domainName),
 					parentId,
 					title: prefix ? `${prefix}[site]@${domainName}` : `@${domainName}`,
 					contexts: ['editable'],
@@ -150,24 +142,23 @@ class BackgroundController {
 	}
 
 	/**
-	 * Fetches stored domains and rebuilds context menus.
-	 *
+	 * Retrieves custom domains and rebuilds context menus.
 	 * @private
-	 * @returns {Promise<void>} Resolves when loaded.
+	 * @returns {Promise<void>} when loaded.
 	 */
 	async #loadAndCreateMenus() {
-		const result = await browser.storage.sync.get('aliasDomains');
+		const storage = await Utils.getStorage();
+		const result = await storage.get('aliasDomains');
 		const domains = result.aliasDomains || [];
 		await this.#updateContextMenus(domains);
 	}
 
 	/**
-	 * Handles context menu clicks to open options or trigger alias insertion.
-	 *
+	 * Handles context menu clicks.
 	 * @private
-	 * @param {browser.contextMenus.OnClickData} info - Menu click event payload.
+	 * @param {browser.contextMenus.OnClickData} info - Event payload.
 	 * @param {browser.tabs.Tab} tab - Tab where the click occurred.
-	 * @returns {Promise<void>} Resolves when click action handled.
+	 * @returns {Promise<void>} when click action is handled.
 	 */
 	async #handleContextMenuClick(info, tab) {
 		if (info.menuItemId === BackgroundController.CONFIGURE_MENU_ID) {
@@ -179,8 +170,10 @@ class BackgroundController {
 			typeof info.menuItemId === 'string'
 			&& info.menuItemId.startsWith(BackgroundController.FILL_PREFIX)
 		) {
-			const clickedDomain = info.menuItemId.replace(BackgroundController.FILL_PREFIX, '');
-			const storage = await this.#getStorage();
+			const clickedDomain = info.menuItemId.substring(
+				BackgroundController.FILL_PREFIX.length
+			);
+			const storage = await Utils.getStorage();
 			const result = await storage.get(['aliasDomains', 'includeTld']);
 			const domains = result.aliasDomains || [];
 			const matchedDomain = domains.find((item) => {
@@ -207,8 +200,7 @@ class BackgroundController {
 	}
 
 	/**
-	 * Registers browser runtime and storage event listeners.
-	 *
+	 * Registers event listeners.
 	 * @private
 	 * @returns {void}
 	 */

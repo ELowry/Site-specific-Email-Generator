@@ -1,14 +1,32 @@
 <!doctype html>
-<html>
+<html lang="en">
 	<head>
 		<meta charset="utf-8" />
-		<link rel="stylesheet" href="../options/options.css" />
 		<link rel="stylesheet" href="./popup.css" />
 	</head>
 	<body>
-		<div class="popup-header">
-			<h1>Copy Alias</h1>
-			<button id="settings-btn" class="settings-btn" title="Open Settings">
+		<header class="popup-header">
+			<div class="header-icon">
+				<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+					<g
+						fill="none"
+						stroke="currentColor"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+					>
+						<path d="m8 12a4 4 0 1 0 8 0 4 4 0 1 0-8 0" />
+						<path d="M16 12v1.5a2.5 2.5 0 0 0 5 0V12a9 9 0 1 0-5.5 8.28" />
+					</g>
+				</svg>
+			</div>
+			<h1>Email Generator</h1>
+			<button
+				id="SettingsButton"
+				class="btn-primary icon-only settings-btn"
+				title="Open Settings"
+				aria-label="Open Settings"
+			>
 				<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 					<g
 						fill="none"
@@ -24,20 +42,16 @@
 					</g>
 				</svg>
 			</button>
-		</div>
+		</header>
 
-		<div id="generated-alias-container" class="alias-list">
-			<div
-				id="loading-text"
-				style="text-align: center; color: var(--text-subtitle); padding: 12px"
-			>
-				Loading...
+		<main>
+			<div id="DomainsContainer" class="alias-list" role="menu"></div>
+			<div id="PopupFeedback" class="feedback-box" aria-live="polite">
+				<div class="feedback-content"></div>
 			</div>
-		</div>
+		</main>
 
-		<div id="feedback-message-box" class="feedback-message-box"></div>
-
-		<template id="template-copy-icon">
+		<template id="template-copyIcon">
 			<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 				<g
 					fill="none"
@@ -56,7 +70,7 @@
 			</svg>
 		</template>
 
-		<template id="template-success-icon">
+		<template id="template-successIcon">
 			<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 				<g
 					fill="none"
@@ -75,12 +89,30 @@
 			</svg>
 		</template>
 
-		<template id="template-no-domains">
-			<div style="text-align: center; padding: 16px">
-				<p style="color: var(--text-subtitle); margin-bottom: 12px">
-					No domains configured.
-				</p>
-				<button id="go-to-settings-btn" class="btn-primary">Go to Settings</button>
+		<template id="template-missingDomains">
+			<div style="text-align: center; padding: 1rem">
+				<p style="opacity: 0.8; margin-bottom: 1.5rem"> No domains configured. </p>
+				<button id="OpenSettingsButton" class="btn-primary">
+					<svg
+						viewBox="0 0 24 24"
+						xmlns="http://www.w3.org/2000/svg"
+						style="width: 1.2em; height: 1.2em"
+					>
+						<g
+							fill="none"
+							stroke="currentColor"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+						>
+							<path
+								d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 0 0-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 0 0-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 0 0-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 0 0-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 0 0 1.066-2.573c-.94-1.543.826-3.31 2.37-2.37c1 .608 2.296.07 2.572-1.065"
+							/>
+							<path d="m9 12a3 3 0 1 0 6 0 3 3 0 0 0-6 0" />
+						</g>
+					</svg>
+					Go to Settings
+				</button>
 			</div>
 		</template>
 

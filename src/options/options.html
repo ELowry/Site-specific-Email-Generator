@@ -1,62 +1,28 @@
 <!doctype html>
-<html>
+<html lang="en">
 	<head>
-		<meta charset="utf-8" />
-		<title>Email Generator</title>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="color-scheme" content="dark light" />
+
+		<meta name="theme-color" content="#e29186" />
+		<meta name="theme-color" content="#6d0a1f" media="(prefers-color-scheme: light)" />
+
+		<title>Email Generator Settings</title>
+		<meta name="author" content="Eric Lowry" />
+
 		<link rel="stylesheet" href="options.css" />
+
+		<link rel="icon" type="image/png" sizes="16x16" href="icons/icon-16.png" />
+		<link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32.png" />
+		<link rel="icon" type="image/png" sizes="48x48" href="icons/icon-48.png" />
+		<link rel="icon" type="image/png" sizes="128x128" href="icons/icon-128.png" />
 	</head>
 
 	<body>
-		<div class="header-icon">
-			<svg
-				viewBox="0 0 24 24"
-				xmlns="http://www.w3.org/2000/svg"
-				width="48px"
-				height="48px"
-				style="width: 48px; height: 48px"
-			>
-				<g
-					fill="none"
-					stroke="currentColor"
-					stroke-linecap="round"
-					stroke-linejoin="round"
-					stroke-width="2"
-				>
-					<path d="m8 12a4 4 0 1 0 8 0 4 4 0 1 0-8 0" />
-					<path d="M16 12v1.5a2.5 2.5 0 0 0 5 0V12a9 9 0 1 0-5.5 8.28" />
-				</g>
-			</svg>
-		</div>
-
-		<h1>Email Generator</h1>
-		<p class="subtitle">Manage your custom domains for smart email generation.</p>
-
-		<div class="card">
-			<h2>Extension Settings</h2>
-
-			<div class="settings-row">
-				<input type="checkbox" id="use-sync-toggle" />
-				<label for="use-sync-toggle" class="settings-label"
-					>Enable Firefox Sync (sync settings across devices)</label
-				>
-			</div>
-
-			<div style="display: flex; align-items: center; gap: 8px; margin-top: 16px">
-				<input type="checkbox" id="include-tld-toggle" checked />
-				<label for="include-tld-toggle" style="margin: 0; cursor: pointer"
-					>Include TLD in alias (netflix -> netflix.com)</label
-				>
-			</div>
-		</div>
-
-		<div class="card">
-			<h2>Domain Configuration</h2>
-			<p class="description">Add the domains you want to use for your email aliases.</p>
-
-			<div id="saved-aliases-grid" class="saved-aliases-grid"></div>
-
-			<div class="input-group">
-				<div class="input-icon">
+		<main class="text-layout">
+			<header class="page-header">
+				<div class="header-icon">
 					<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 						<g
 							fill="none"
@@ -65,47 +31,136 @@
 							stroke-linejoin="round"
 							stroke-width="2"
 						>
-							<path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0-18 0m.6-3h16.8M3.6 15h16.8" />
-							<path d="m11.5 3a17 17 0 0 0 0 18m1-18a17 17 0 0 1 0 18" />
+							<path d="m8 12a4 4 0 1 0 8 0 4 4 0 1 0-8 0" />
+							<path d="M16 12v1.5a2.5 2.5 0 0 0 5 0V12a9 9 0 1 0-5.5 8.28" />
 						</g>
 					</svg>
 				</div>
-				<input
-					type="text"
-					id="domain-entry-field"
-					placeholder="Add new domain (e.g. mydomain.com)"
-					pattern="^([a-zA-Z0-9\-]+\.)+[a-zA-Z]{2,}$"
-					title="Please enter a valid domain name (e.g., example.com)"
+				<div>
+					<h1>Email Generator</h1>
+					<p class="subtitle">Manage your custom domains for smart email generation.</p>
+				</div>
+			</header>
+
+			<section class="block modal-box">
+				<div class="modal-content">
+					<h2>Extension Settings</h2>
+					<div class="settings-list" role="menu">
+						<button
+							role="menuitemcheckbox"
+							aria-checked="false"
+							class="switch-btn"
+							id="UseSyncToggle"
+						>
+							<span class="switch-track"></span>
+							<span class="switch-label"
+								>Enable Firefox Sync (sync settings across devices)</span
+							>
+						</button>
+						<button
+							role="menuitemcheckbox"
+							aria-checked="true"
+							class="switch-btn"
+							id="IncludeTLDToggle"
+						>
+							<span class="switch-track"></span>
+							<span class="switch-label"
+								>Include TLD in alias (netflix -> netflix.com)</span
+							>
+						</button>
+					</div>
+					<div id="SettingsFeedback" class="feedback-box" aria-live="polite">
+						<div class="feedback-content"></div>
+					</div>
+				</div>
+			</section>
+
+			<section class="block modal-box">
+				<div class="modal-content">
+					<h2>Domain Configuration</h2>
+					<p class="description"
+						>Add the domains you want to use for your email aliases.</p
+					>
+
+					<div id="SavedDomains" class="saved-aliases-grid"></div>
+
+					<div class="inline-form">
+						<div class="input-group">
+							<input
+								type="text"
+								id="PrefixInput"
+								class="text-input prefix-input"
+								placeholder="Prefix"
+								pattern="^[a-zA-Z0-9._+\-]*$"
+								title="Only letters, numbers, periods, underscores, hyphens, and plus signs are allowed."
+							/>
+							<span class="input-suffix">Optional</span>
+						</div>
+						<div class="input-with-icon">
+							<div class="input-icon">
+								<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+									<g
+										fill="none"
+										stroke="currentColor"
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										stroke-width="2"
+									>
+										<path
+											d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0-18 0m.6-3h16.8M3.6 15h16.8"
+										/>
+										<path d="m11.5 3a17 17 0 0 0 0 18m1-18a17 17 0 0 1 0 18" />
+									</g>
+								</svg>
+							</div>
+							<input
+								type="text"
+								id="DomainInput"
+								class="text-input with-icon"
+								placeholder="Domain name"
+								pattern="^([a-zA-Z0-9\-]+\.)+[a-zA-Z]{2,}$"
+								title="Please enter a valid domain name (e.g., example.com)"
+							/>
+						</div>
+						<button
+							id="AddDomainButton"
+							class="btn-primary icon-only"
+							aria-label="Add Domain"
+							title="Add Domain"
+						>
+							<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+								<path
+									d="m12 5v14m-7-7h14"
+									fill="none"
+									stroke="currentColor"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="2"
+								/>
+							</svg>
+						</button>
+					</div>
+					<div id="DomainsFeedback" class="feedback-box" aria-live="polite">
+						<div class="feedback-content"></div>
+					</div>
+				</div>
+			</section>
+		</main>
+
+		<template id="template-dragIcon">
+			<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+				<path
+					d="m8 5a1 1 0 1 0 2 0 1 1 0 1 0-2 0m0 7a1 1 0 1 0 2 0 1 1 0 1 0-2 0m0 7a1 1 0 1 0 2 0 1 1 0 1 0-2 0m6-14a1 1 0 1 0 2 0 1 1 0 1 0-2 0m0 7a1 1 0 1 0 2 0 1 1 0 1 0-2 0m0 7a1 1 0 1 0 2 0 1 1 0 1 0-2 0"
+					fill="none"
+					stroke="currentColor"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					stroke-width="2"
 				/>
-			</div>
+			</svg>
+		</template>
 
-			<div class="input-group">
-				<input
-					type="text"
-					id="new-prefix-input"
-					placeholder="Optional Prefix (e.g. junk_)"
-					pattern="^[a-zA-Z0-9._+\-]*$"
-					title="Only letters, numbers, periods, underscores, hyphens, and plus signs are allowed."
-				/>
-			</div>
-
-			<button id="register-domain-button" class="btn-primary">
-				<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-					<path
-						d="m12 5v14m-7-7h14"
-						fill="none"
-						stroke="currentColor"
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						stroke-width="2"
-					/>
-				</svg>
-				Add Domain
-			</button>
-			<div id="feedback-message-box" class="feedback-message-box"></div>
-		</div>
-
-		<template id="template-delete-icon">
+		<template id="template-deleteIcon">
 			<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 				<path
 					d="M4 7h16m-10 4v6m4-6v6M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-12M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"

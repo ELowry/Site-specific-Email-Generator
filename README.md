@@ -1,52 +1,56 @@
-# Site-Specific Email Generator
+[![License: MIT](https://img.shields.io/badge/License-MIT-3d383b.svg)](LICENSE)
 
-Protect your real inbox by instantly generating and autofilling unique email addresses for every website using your personal domain.
+# [![Site-Specific Email Generator](logo.png)](#)
 
-This Firefox extension acts as a privacy shield, taking your custom catch-all domain and automatically crafting site-specific aliases (e.g., `current-website@yourdomain.com`). By keeping your real email address hidden, you can effortlessly organize your inbox, track data leaks, and cut down on spam.
+Easily keep your emails sorted ans spam-free by generating a unique email address for every site using your personal domain!
 
----
+> [!IMPORTANT]  
+> This extension does not handle actually creating email aliases; it is **designed for users who have already set up "catch-all" email routing** with their email provider or custom domain.
 
-## Core Features
+This Firefox extension helps you easily sign up anywhere with a dedicated email by automatically generating an email alias specific to the site you're on (e.g., `current-website@yourdomain.com`). By using a different email alias for each website, you can effortlessly organize your inbox, monitor for data leaks, and stop spam.
 
-- **Inline Autofill Widget**:  
-  The extension actively monitors for email input fields on the page. When an email field comes into focus, a floating action icon appears beside it. Clicking the icon instantly generates and injects your alias.
-- **Shadow DOM Isolation**:  
-  The inline widget is injected via a closed Shadow DOM, ensuring its styling never conflicts with the host website.
-- **Context Menu Injection**:  
-  Prefer to right-click? You can generate and inject aliases directly through the browser's native context menu on any editable field.
-- **Popup Clipboard Interface**:  
-  Click the extension icon in your browser toolbar to open a quick-action popup. It automatically evaluates your active tab and lets you copy the generated alias to your clipboard with a single click.
-- **Intelligent Domain Parsing**:  
-  Powered by a robust public suffix list, the internal utility accurately parses the active URL's hostname to extract the true site identifier (e.g., `some-website.com` becomes `some-website`).
-- **Multi-Domain & Prefix Configuration**:  
-  Manage multiple custom domains in the settings page and optionally append custom prefixes to your aliases (e.g., `spam.some-website@yourdomain.com`).
-- **Privacy-First & Local Execution**:  
-  All extraction and generation logic runs 100% locally in your browser without phoning home to external APIs. Settings can be kept local or synced securely via Firefox Sync.
+## Features
+
+- **Password Autofill**:  
+  The extension tries to detect any email input field and injects a small button when it is focused. Clicking the icon instantly generates a unique email alias using the site's domain name.  
+  _Note: If you have multiple domains registered, clicking the icon repeatedly cycles through them._  
+  Some sites use custom code for email inputs, preventing the extension from adding the button, so you can also:
+    - Automatically paste a generated email into any input field using the right-click button.
+    - Click the extension icon in your browser toolbar to open a popup that lets you copygenerated emails.
+- **Optional Top-level Domain Inclusion**:  
+  You can choose to include or exclude the top-level domain from generated emails (e.g., `some-website.com` ↔ `some-website`).
+- **Domain Configuration**:  
+  The options page lets you add multiple domains and/or choose to add prefixes to generated emails (e.g., `spam.some-website@yourdomain.com`).
+
+> [!NOTE]  
+> **Privacy-First & Local Execution**  
+> All extraction and generation logic runs 100% locally in your browser without phoning home to external APIs. Settings can be kept local or synced securely via Firefox Sync.
 
 ## Installation & Setup
 
-1. Install the extension from the Firefox Add-ons store.
-2. Click the extension icon in your toolbar and select the **Settings** gear icon.
-3. Add your custom catch-all domain(s) in the configuration panel.
-4. (Optional) Adjust your Firefox Sync preferences or toggle Top-Level Domain (TLD) inclusion.
+_Coming Soon!_
 
 ## Usage
 
-Once configured, you can generate your aliases in three ways:
+Once configured, you can generate email aliases in three ways:
 
-1. **Inline Button**:  
-   Click into any email input field on a webpage and click the floating generator icon that appears.
-2. **Right-Click Menu**:  
-   Right-click a text field and select **Generate Email Alias** (or choose a specific domain if you have multiple configured).
-3. **Copy to Clipboard**:  
-   Open the extension popup from your toolbar and click the copy button to grab your alias for the current site.
+- **Inline Button**:  
+  Click into any email input field on a webpage and click the icon that appears inside it to the right.
+- **Right-Click Menu**:  
+  Right-click a text field and select **Generate Email Alias** (or choose a specific domain if you have multiple configured).
+- **Copy to Clipboard**:  
+  Open the extension popup from your toolbar and click the copy button to grab your email alias for the current site.
 
-## Local Development
+## Privacy
 
-Ensure you have Node.js and NPM installed, then clone the repository.
+This extension respects your privacy implicitly. It operates entirely locally within your browser. It does not collect, store, or transmit your personal data, email addresses, or browsing history.
 
-**Install dependencies:**
+For full details on how data and network requests are handled, please read the [Privacy Policy](PRIVACY.md).
 
-```bash
-npm install
-```
+## Building from Source
+
+Please refer to the dedicated [AMO README](AMO-README.md) file for full instructions.
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).

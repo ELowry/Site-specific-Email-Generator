@@ -1,5 +1,5 @@
 /**
- * Controller for detecting input fields, managing mobile action icons, and filling aliases in content pages.
+ * Detects input fields, manages mobile action icons, and injects custom emails into content pages.
  */
 class ExtensionController {
 	/** @type {HTMLElement|null} */
@@ -12,19 +12,20 @@ class ExtensionController {
 	#activeInput = null;
 
 	/** @type {EventListener|null} */
-	#layoutChangeListener = null;
+	#onLayoutChange = null;
 
-	/** @type {UtilsController|null} */
+	/** @type {Object|null} */
 	#utils = null;
 
-	/**
-	 * Creates an instance of ExtensionController.
-	 */
+	/** @type {number} */
+	#domainIndex = 0;
+
 	constructor() {
 		this.#hostElement = null;
 		this.#iconElement = null;
 		this.#activeInput = null;
-		this.#layoutChangeListener = () => {
+		this.#domainIndex = 0;
+		this.#onLayoutChange = () => {
 			if (this.#iconElement && this.#activeInput) {
 				requestAnimationFrame(() => {
 					this.#updateIconPosition();
@@ -34,10 +35,10 @@ class ExtensionController {
 	}
 
 	/**
-	 * Shadow DOM stylesheet for isolating the icon from the host page.
-	 *
+	 * Stylesheet for the icon shadow DOM.  
+	 * Ensures the icon doesn't interfere with the normal page DOM.
 	 * @constant
-	 * @returns {string} The CSS string.
+	 * @returns {string} the full CSS.
 	 */
 	static get SHADOW_CSS() {
 		return `
@@ -56,8 +57,16 @@ class ExtensionController {
 				height: max(1.2rem, 1em);
 				pointer-events: auto;
 
+				@media (prefers-color-scheme: dark) {
+					background-color: #0f0d0f;
+				}
+
 				&[data-theme='dark'] {
 					background-color: #0f0d0f;
+				}
+
+				&[data-theme='light'] {
+					background-color: #ddd8d6;
 				}
 
 				&::after {
@@ -73,21 +82,30 @@ class ExtensionController {
 					content: '';
 				}
 
+				@media (prefers-color-scheme: dark) {
+					&::after {
+						background-color: #e29186;
+					}
+				}
+
 				&[data-theme='dark']::after {
 					background-color: #e29186;
+				}
+
+				&[data-theme='light']::after {
+					background-color: #6d0a1f;
 				}
 			}
 		`;
 	}
 
 	/**
-	 * Initializes listeners for DOM focus and extension messaging.
-	 *
+	 * Initializes DOM focus listeners and extension messaging.
 	 * @returns {void}
 	 */
 	async init() {
 		import(browser.runtime.getURL('utils.js')).then((module) => {
-			this.#utils = module;
+			this.#utils = module.Utils;
 		});
 
 		browser.runtime.onMessage.addListener((message) => {
@@ -118,11 +136,10 @@ class ExtensionController {
 	}
 
 	/**
-	 * Locates the nearest valid input field relative to a given element.
-	 *
+	 * Locates the nearest valid input field.
 	 * @private
-	 * @param {Element|null} baseElement - The DOM node to start searching from.
-	 * @returns {HTMLInputElement|HTMLTextAreaElement|null} The located input, or null.
+	 * @param {Element|null} baseElement - The starting DOM element.
+	 * @returns {HTMLInputElement|HTMLTextAreaElement|null} the located input | null.
 	 */
 	#findClosestInput(baseElement) {
 		if (!baseElement) {
@@ -130,7 +147,7 @@ class ExtensionController {
 		}
 
 		if (baseElement.tagName === 'INPUT' || baseElement.tagName === 'TEXTAREA') {
-			return /** @type {HTMLInputElement|HTMLTextAreaElement} */ (baseElement);
+			return baseElement;
 		}
 
 		const query =
@@ -138,14 +155,14 @@ class ExtensionController {
 
 		const innerInput = baseElement.querySelector(query);
 		if (innerInput) {
-			return /** @type {HTMLInputElement|HTMLTextAreaElement} */ (innerInput);
+			return innerInput;
 		}
 
 		const parent = baseElement.parentElement;
 		if (parent) {
 			const siblingInput = parent.querySelector(query);
 			if (siblingInput) {
-				return /** @type {HTMLInputElement|HTMLTextAreaElement} */ (siblingInput);
+				return siblingInput;
 			}
 		}
 
@@ -153,8 +170,7 @@ class ExtensionController {
 	}
 
 	/**
-	 * Determines the theme based on the input's background color and updates the icon.
-	 *
+	 * Sets the icon theme based on the input's background color.
 	 * @private
 	 * @param {Element} inputElement - The active input element.
 	 * @returns {void}
@@ -202,16 +218,17 @@ class ExtensionController {
 	}
 
 	/**
-	 * Positions and displays the email generator icon over the target input inside a Shadow DOM.
-	 *
+	 * Injects the email generator icon inside a Shadow DOM.
 	 * @private
 	 * @param {HTMLInputElement|HTMLTextAreaElement} inputTarget - Input receiving focus.
 	 * @returns {void}
 	 */
 	#showIcon(inputTarget) {
+		this.#domainIndex = 0;
+
 		if (!this.#hostElement) {
 			this.#hostElement = document.createElement('div');
-			this.#hostElement.id = 'alias-widget-root';
+			this.#hostElement.id = 'DomainsWidgetRoot';
 			this.#hostElement.style.cssText =
 				'position: absolute; top: 0; left: 0; z-index: 2147483647; pointer-events: none;';
 
@@ -232,39 +249,48 @@ class ExtensionController {
 				const domains = result.aliasDomains || [];
 
 				if (domains.length > 0) {
-					const firstDomain = domains[0];
-					const domainName = firstDomain.domain || firstDomain;
-					const prefix = firstDomain.prefix || '';
+					const currentDomainData = domains[this.#domainIndex];
+					const domainName = currentDomainData.domain || currentDomainData;
+					const prefix = currentDomainData.prefix || '';
 					const includeTld = result.includeTld !== false;
 
-					this.triggerAliasInjection(domainName, prefix, includeTld, inputTarget);
+					this.triggerAliasInjection(domainName, {
+						prefix,
+						includeTld,
+						targetInput: inputTarget,
+						closeIcon: domains.length === 1,
+					});
+
+					this.#domainIndex = (this.#domainIndex + 1) % domains.length;
 				}
 			});
+
+			this.#iconElement = icon;
+
+			this.#updateTheme(inputTarget);
 
 			shadowRoot.appendChild(style);
 			shadowRoot.appendChild(icon);
 			document.body.appendChild(this.#hostElement);
 
-			this.#iconElement = icon;
-
-			window.addEventListener('resize', this.#layoutChangeListener);
-			window.addEventListener('scroll', this.#layoutChangeListener, true);
+			window.addEventListener('resize', this.#onLayoutChange);
+			window.addEventListener('scroll', this.#onLayoutChange, true);
+		} else {
+			this.#updateTheme(inputTarget);
 		}
 
-		this.#updateTheme(inputTarget);
 		this.#updateIconPosition();
 	}
 
 	/**
-	 * Removes the floating host element and its Shadow DOM from the document.
-	 *
+	 * Clears the Shadow DOM from the document.
 	 * @private
 	 * @returns {void}
 	 */
 	#hideIcon() {
 		if (this.#hostElement) {
-			window.removeEventListener('resize', this.#layoutChangeListener);
-			window.removeEventListener('scroll', this.#layoutChangeListener, true);
+			window.removeEventListener('resize', this.#onLayoutChange);
+			window.removeEventListener('scroll', this.#onLayoutChange, true);
 
 			this.#hostElement.remove();
 			this.#hostElement = null;
@@ -274,8 +300,7 @@ class ExtensionController {
 	}
 
 	/**
-	 * Recalculates and updates the absolute position of the icon based on the active input.
-	 *
+	 * Moves the icon to the active input.
 	 * @private
 	 * @returns {void}
 	 */
@@ -290,28 +315,25 @@ class ExtensionController {
 	}
 
 	/**
-	 * Handles message events from background or popup scripts.
-	 *
+	 * Handles extension messages.
 	 * @private
 	 * @param {object} message - Message payload.
 	 * @returns {void}
 	 */
 	#handleRuntimeMessage(message) {
 		if (message.command === 'insertAlias') {
-			this.triggerAliasInjection(
-				message.domain,
-				message.prefix,
-				message.includeTld,
-				document.activeElement
-			);
+			this.triggerAliasInjection(message.domain, {
+				prefix: message.prefix,
+				includeTld: message.includeTld,
+				targetInput: document.activeElement,
+			});
 		}
 	}
 
 	/**
-	 * Inspects focused elements and attaches generator triggers on email fields.
-	 *
+	 * Attaches generator triggers on email fields upon focus.
 	 * @private
-	 * @param {FocusEvent|Object} event - Focusin event or synthetic event payload.
+	 * @param {FocusEvent|Object} event - Focusin event.
 	 * @returns {void}
 	 */
 	#handleFocusIn(event) {
@@ -346,8 +368,7 @@ class ExtensionController {
 	}
 
 	/**
-	 * Dismisses the generator trigger icon when blur occurs outside the active field.
-	 *
+	 * Hides the icon when removing focus from a valid input.
 	 * @private
 	 * @returns {void}
 	 */
@@ -360,15 +381,19 @@ class ExtensionController {
 	}
 
 	/**
-	 * Injects the generated alias into the targeted input element.
-	 *
-	 * @param {string} domain - Domain name for alias generation.
-	 * @param {string} [prefix=''] - Optional alias prefix.
-	 * @param {boolean} [includeTld=true] - Whether to include the top-level domain.
-	 * @param {Element|null} [targetInput] - Target element to receive the value.
+	 * Injects the generated custom email into an input.
+	 * @param {string} domain - Custom domain name.
+	 * @param {Object} [options={}] - Injection configuration.
+	 * @param {string} [options.prefix=''] - Custom prefix.
+	 * @param {boolean} [options.includeTld=true] - Whether to include the TLD.
+	 * @param {Element|null} [options.targetInput=null] - Target element.
+	 * @param {boolean} [options.closeIcon=true] - Whether to dismiss the icon after injection.
 	 * @returns {void}
 	 */
-	triggerAliasInjection(domain, prefix = '', includeTld = true, targetInput = null) {
+	triggerAliasInjection(
+		domain,
+		{ prefix = '', includeTld = true, targetInput = null, closeIcon = true } = {}
+	) {
 		const initialTarget = targetInput || document.activeElement;
 		const target = this.#findClosestInput(initialTarget);
 
@@ -388,7 +413,10 @@ class ExtensionController {
 			target.value = `${prefix}${siteIdentifier}@${domain}`;
 			target.dispatchEvent(new Event('input', { bubbles: true }));
 			target.dispatchEvent(new Event('change', { bubbles: true }));
-			this.#hideIcon();
+
+			if (closeIcon) {
+				this.#hideIcon();
+			}
 		} catch (error) {
 			console.error('Failed to generate email alias:', error);
 		}

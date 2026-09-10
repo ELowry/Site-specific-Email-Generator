@@ -1,89 +1,43 @@
-import { getStorage, parseDomainContext } from '../utils.js';
+import { Feedback } from '../feedback.js';
+import { Utils } from '../utils.js';
 
 /**
  * Controller for the browser action popup interface to generate and copy aliases.
  */
 class PopupController {
 	/** @type {HTMLElement|null} */
-	#aliasListContainer = null;
+	#aliasListContainer;
 
 	/** @type {HTMLButtonElement|null} */
-	#settingsBtn = null;
-
-	/** @type {HTMLElement|null} */
-	#statusDiv = null;
+	#settingsBtn;
 
 	/** @type {HTMLTemplateElement|null} */
-	#copyIconTemplate = null;
+	#copyIconTemplate;
 
 	/** @type {HTMLTemplateElement|null} */
-	#successIconTemplate = null;
+	#successIconTemplate;
 
 	/** @type {HTMLTemplateElement|null} */
-	#noDomainsTemplate = null;
+	#noDomainsTemplate;
 
-	/**
-	 * Creates an instance of PopupController.
-	 */
 	constructor() {
 		this.#aliasListContainer = null;
 		this.#settingsBtn = null;
-		this.#statusDiv = null;
 		this.#copyIconTemplate = null;
 		this.#successIconTemplate = null;
 		this.#noDomainsTemplate = null;
 	}
 
 	/**
-	 * Duration in milliseconds for clipboard feedback status.
-	 *
-	 * @constant
-	 * @returns {number} Duration in ms.
-	 */
-	static get STATUS_DURATION() {
-		return 2000;
-	}
-
-	/**
-	 * Color for successful copy indication.
-	 *
-	 * @constant
-	 * @returns {string} Hex color string.
-	 */
-	static get SUCCESS_COLOR() {
-		return '#95c785';
-	}
-
-	/**
-	 * Color for error indication.
-	 *
-	 * @constant
-	 * @returns {string} Hex color string.
-	 */
-	static get ERROR_COLOR() {
-		return '#e1739b';
-	}
-
-	/**
-	 * Initializes popup DOM bindings, registers button events, and renders aliases.
-	 *
+	 * Initializes references, registers event listeners, and displays custom emails.
 	 * @returns {void}
 	 */
 	init() {
-		this.#aliasListContainer = document.getElementById('generated-alias-container');
-		this.#settingsBtn = /** @type {HTMLButtonElement|null} */ (
-			document.getElementById('settings-btn')
-		);
-		this.#statusDiv = document.getElementById('feedback-message-box');
-		this.#copyIconTemplate = /** @type {HTMLTemplateElement|null} */ (
-			document.getElementById('template-copy-icon')
-		);
-		this.#successIconTemplate = /** @type {HTMLTemplateElement|null} */ (
-			document.getElementById('template-success-icon')
-		);
-		this.#noDomainsTemplate = /** @type {HTMLTemplateElement|null} */ (
-			document.getElementById('template-no-domains')
-		);
+		this.#aliasListContainer = document.getElementById('DomainsContainer');
+		this.#settingsBtn = document.getElementById('SettingsButton');
+		this.#copyIconTemplate = document.getElementById('template-copyIcon');
+		this.#successIconTemplate = document.getElementById('template-successIcon');
+		this.#noDomainsTemplate = document.getElementById('template-missingDomains');
 
 		if (this.#settingsBtn) {
 			this.#settingsBtn.addEventListener('click', () => {
@@ -95,11 +49,10 @@ class PopupController {
 	}
 
 	/**
-	 * Copies alias text to the clipboard and animates button feedback.
-	 *
+	 * Copies a custom email to the clipboard.
 	 * @private
-	 * @param {string} text - Alias email to copy.
-	 * @param {HTMLButtonElement} buttonElement - Trigger button element.
+	 * @param {string} text - The custom email to copy.
+	 * @param {HTMLButtonElement} buttonElement - The copy button.
 	 * @returns {void}
 	 */
 	#copyToClipboard(text, buttonElement) {
@@ -107,71 +60,41 @@ class PopupController {
 			.writeText(text)
 			.then(() => {
 				buttonElement.classList.add('success');
+
 				if (this.#successIconTemplate) {
 					buttonElement.replaceChildren(
 						this.#successIconTemplate.content.cloneNode(true)
 					);
 				}
 
-				if (this.#statusDiv) {
-					this.#statusDiv.textContent = 'Copied to clipboard!';
-					this.#statusDiv.style.color = 'var(--status-success-color)';
-				}
+				Feedback.showMessage('Copied to clipboard!', { type: 'success' });
 
 				setTimeout(() => {
 					buttonElement.classList.remove('success');
+
 					if (this.#copyIconTemplate) {
 						buttonElement.replaceChildren(
 							this.#copyIconTemplate.content.cloneNode(true)
 						);
 					}
-					if (this.#statusDiv) {
-						this.#statusDiv.textContent = '';
-					}
-				}, PopupController.STATUS_DURATION);
+				}, Feedback.DEFAULT_DURATION);
 			})
 			.catch(() => {
-				if (this.#statusDiv) {
-					this.#statusDiv.textContent = 'Failed to copy';
-					this.#statusDiv.style.color = 'var(--status-error-color)';
-				}
+				Feedback.showMessage('Failed to copy', { type: 'error' });
 			});
 	}
 
 	/**
-	 * Queries the active tab, generates matching aliases, and populates the popup DOM.
-	 *
+	 * Generates and displays custom emails based on the current tab's URL.
 	 * @private
-	 * @returns {Promise<void>} Resolves when loaded.
+	 * @returns {Promise<void>} when loaded.
 	 */
 	async #loadAndRender() {
 		if (!this.#aliasListContainer) {
 			return;
 		}
 
-		const tabs = await browser.tabs.query({ active: true, currentWindow: true });
-		if (!tabs || tabs.length === 0) {
-			const errorDiv = document.createElement('div');
-			errorDiv.style.cssText =
-				'text-align: center; color: var(--text-subtitle); padding: 12px;';
-			errorDiv.textContent = 'Error: Cannot read tab';
-			this.#aliasListContainer.replaceChildren(errorDiv);
-			return;
-		}
-
-		let url;
-		try {
-			url = new URL(tabs[0].url);
-		} catch {
-			const invalidDiv = document.createElement('div');
-			invalidDiv.style.cssText =
-				'text-align: center; color: var(--text-subtitle); padding: 12px;';
-			invalidDiv.textContent = 'Invalid page';
-			this.#aliasListContainer.replaceChildren(invalidDiv);
-			return;
-		}
-
-		const storage = await getStorage();
+		const storage = await Utils.getStorage();
 		const result = await storage.get(['aliasDomains', 'includeTld']);
 		const configuredDomains = result.aliasDomains || [];
 
@@ -180,7 +103,8 @@ class PopupController {
 				const noDomainsContent = this.#noDomainsTemplate.content.cloneNode(true);
 				this.#aliasListContainer.replaceChildren(noDomainsContent);
 
-				const goToSettingsBtn = document.getElementById('go-to-settings-btn');
+				const goToSettingsBtn = document.getElementById('OpenSettingsButton');
+
 				if (goToSettingsBtn) {
 					goToSettingsBtn.addEventListener('click', () => {
 						browser.runtime.openOptionsPage();
@@ -190,8 +114,34 @@ class PopupController {
 			return;
 		}
 
-		const includeTld = result.includeTld !== false;
-		const currentSiteIdentifier = parseDomainContext(url.hostname, includeTld);
+		let currentSiteIdentifier = 'unknown';
+
+		try {
+			const tabs = await browser.tabs.query({ active: true, currentWindow: true });
+
+			if (tabs && tabs.length > 0) {
+				if (
+					!tabs[0].url
+					|| tabs[0].url.startsWith('about:')
+					|| tabs[0].url.startsWith('moz-extension:')
+				) {
+					browser.runtime.openOptionsPage();
+					window.close();
+					return;
+				}
+
+				const url = new URL(tabs[0].url);
+
+				if (url.protocol === 'http:' || url.protocol === 'https:') {
+					const includeTld = result.includeTld !== false;
+					currentSiteIdentifier = Utils.parseDomainContext(url.hostname, includeTld);
+				}
+			}
+		} catch (error) {
+			console.warn(
+				'Silent failure reading active tab url. Defaulting to generic identifier.'
+			);
+		}
 
 		this.#aliasListContainer.replaceChildren();
 
@@ -200,8 +150,8 @@ class PopupController {
 			const prefix = domainData.prefix || '';
 			const generatedEmail = `${prefix}${currentSiteIdentifier}@${domainName}`;
 
-			const card = document.createElement('div');
-			card.className = 'alias-card';
+			const block = document.createElement('div');
+			block.className = 'alias-block';
 
 			const emailText = document.createElement('span');
 			emailText.className = 'alias-email';
@@ -219,14 +169,15 @@ class PopupController {
 				this.#copyToClipboard(generatedEmail, copyButton);
 			});
 
-			card.appendChild(emailText);
-			card.appendChild(copyButton);
-			this.#aliasListContainer.appendChild(card);
+			block.appendChild(emailText);
+			block.appendChild(copyButton);
+			this.#aliasListContainer.appendChild(block);
 		});
 	}
 }
 
-const Popup = new PopupController();
+export const Popup = new PopupController();
+
 document.addEventListener('DOMContentLoaded', () => {
 	Popup.init();
 });
