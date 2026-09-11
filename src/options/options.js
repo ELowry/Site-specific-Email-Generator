@@ -410,7 +410,7 @@ class OptionsController {
 	}
 }
 
-export const Options = new OptionsController();
+const Options = new OptionsController();
 
 document.addEventListener('DOMContentLoaded', () => {
 	Options.init();

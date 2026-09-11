@@ -176,7 +176,7 @@ class PopupController {
 	}
 }
 
-export const Popup = new PopupController();
+const Popup = new PopupController();
 
 document.addEventListener('DOMContentLoaded', () => {
 	Popup.init();
