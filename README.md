@@ -1,6 +1,6 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-3d383b.svg)](LICENSE)
 
-# [![Site-Specific Email Generator](logo.png)](#)
+# [![Site-specific Email Generator](logo.png)](#)
 
 Easily keep your emails sorted ans spam-free by generating a unique email address for every site using your personal domain!
 
