@@ -5,7 +5,7 @@
 	"description": "Protect your real inbox by instantly generating and autofilling unique email addresses for every website using your personal domain.",
 	"browser_specific_settings": {
 		"gecko": {
-			"id": "rouge.custom-email-alias@eric-lowry.com",
+			"id": "rouge.email-generator@eric-lowry.com",
 			"strict_min_version": "142.0",
 			"data_collection_permissions": {
 				"required": ["none"]
