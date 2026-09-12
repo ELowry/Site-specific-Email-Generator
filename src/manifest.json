@@ -1,7 +1,7 @@
 {
 	"manifest_version": 3,
 	"name": "Site-Specific Email Generator",
-	"version": "0.2.2",
+	"version": "0.2.3",
 	"description": "Protect your real inbox by instantly generating and autofilling unique email addresses for every website using your personal domain.",
 	"browser_specific_settings": {
 		"gecko": {
