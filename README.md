@@ -1,4 +1,4 @@
-[![License: MIT](https://img.shields.io/badge/License-MIT-3d383b.svg)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-3d383b.svg)](LICENSE) [![Latest GitHub release](https://img.shields.io/github/v/release/ELowry/Site-specific-Email-Generator?logo=GitHub&color=a4785e)](https://github.com/ELowry/Site-specific-Email-Generator/releases/latest) [![Mozilla Add-on Users](https://img.shields.io/amo/users/site-specific-email-generator?logo=firefox&color=e19085)](https://addons.mozilla.org/en-US/firefox/addon/site-specific-email-generator/)
 
 # [![Site-specific Email Generator](logo.png)](#)
 
