@@ -39,8 +39,8 @@ class BackgroundController {
 	 * @param {string} domainName - The domain name to append.
 	 * @returns {string} the menu item ID.
 	 */
-	static #getDomainMenuId(domainName) {
-		return `${BackgroundController.FILL_PREFIX}${domainName}`;
+	static #getDomainMenuId(domainName, prefix) {
+		return `${BackgroundController.FILL_PREFIX}${prefix}@${domainName}`;
 	}
 
 	/**
@@ -97,7 +97,7 @@ class BackgroundController {
 			const prefix = domainItem.prefix || '';
 			browser.contextMenus.create(
 				{
-					id: BackgroundController.#getDomainMenuId(domainName),
+					id: BackgroundController.#getDomainMenuId(domainName, prefix),
 					title: prefix
 						? `Generate Alias (${prefix}[site]@${domainName})`
 						: 'Generate Email Alias',
@@ -129,7 +129,7 @@ class BackgroundController {
 			const prefix = domainItem.prefix || '';
 			browser.contextMenus.create(
 				{
-					id: BackgroundController.#getDomainMenuId(domainName),
+					id: BackgroundController.#getDomainMenuId(domainName, prefix),
 					parentId,
 					title: prefix ? `${prefix}[site]@${domainName}` : `@${domainName}`,
 					contexts: ['editable'],
@@ -175,14 +175,19 @@ class BackgroundController {
 				return;
 			}
 
-			const clickedDomain = info.menuItemId.substring(
-				BackgroundController.FILL_PREFIX.length
-			);
+			const payload = info.menuItemId.substring(BackgroundController.FILL_PREFIX.length);
+			const separatorIndex = payload.indexOf('@');
+			const clickedPrefix = payload.substring(0, separatorIndex);
+			const clickedDomain = payload.substring(separatorIndex + 1);
+
 			const storage = await Utils.getStorage();
 			const result = await storage.get(['aliasDomains', 'includeTld']);
 			const domains = result.aliasDomains || [];
+
 			const matchedDomain = domains.find((item) => {
-				return (item.domain || item) === clickedDomain;
+				const itemDomain = item.domain || item;
+				const itemPrefix = item.prefix || '';
+				return itemDomain === clickedDomain && itemPrefix === clickedPrefix;
 			});
 			const prefix = matchedDomain && matchedDomain.prefix ? matchedDomain.prefix : '';
 
