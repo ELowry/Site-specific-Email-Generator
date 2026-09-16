@@ -42,60 +42,86 @@ class ExtensionController {
 	 */
 	static get SHADOW_CSS() {
 		return `
-			.icon-wrapper {
-				display: flex;
-				position: absolute;
-				justify-content: center;
-				align-items: center;
-				transition: opacity 0.2s, background-color 0.2s;
-				cursor: pointer;
-				box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-				border-radius: 50%;
-				background-color: #ddd8d6;
-				padding: max(0.15rem, 0.15em);
-				width: max(1.2rem, 1em);
-				height: max(1.2rem, 1em);
-				pointer-events: auto;
+:host {
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 2147483647;
+	width: 100vw;
+	height: 100vh;
+	pointer-events: none;
+}
 
-				@media (prefers-color-scheme: dark) {
-					background-color: #0f0d0f;
-				}
+.icon-wrapper {
+	all: unset;
+	display: flex;
+	position: absolute;
+	justify-content: center;
+	align-items: center;
+	transition:
+		opacity 0.2s,
+		background-color 0.2s,
+		outline 0.2s;
+	cursor: pointer;
+	box-sizing: border-box;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+	border-radius: 50%;
+	background-color: #ddd8d6;
+	padding: max(0.15rem, 0.15em);
+	width: max(1.2rem, 1em);
+	height: max(1.2rem, 1em);
+	pointer-events: auto;
 
-				&[data-theme='dark'] {
-					background-color: #0f0d0f;
-				}
+	@media (prefers-color-scheme: dark) {
+		background-color: #0f0d0f;
+	}
 
-				&[data-theme='light'] {
-					background-color: #ddd8d6;
-				}
+	&[data-theme='dark'] {
+		background-color: #0f0d0f;
+	}
 
-				&::after {
-					display: block;
-					transition: background-color 0.2s;
-					mask: url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="m8 12a4 4 0 1 0 8 0 4 4 0 1 0-8 0"/><path d="M16 12v1.5a2.5 2.5 0 0 0 5 0V12a9 9 0 1 0-5.5 8.28"/></g></svg>')
-						no-repeat center;
-					-webkit-mask: url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="m8 12a4 4 0 1 0 8 0 4 4 0 1 0-8 0"/><path d="M16 12v1.5a2.5 2.5 0 0 0 5 0V12a9 9 0 1 0-5.5 8.28"/></g></svg>')
-						no-repeat center;
-					background-color: #6d0a1f;
-					width: max(0.9rem, 0.7em);
-					height: max(0.9rem, 0.7em);
-					content: '';
-				}
+	&[data-theme='light'] {
+		background-color: #ddd8d6;
+	}
 
-				@media (prefers-color-scheme: dark) {
-					&::after {
-						background-color: #e29186;
-					}
-				}
+	&:focus-visible {
+		outline: 2px solid #6d0a1f;
+		outline-offset: 2px;
+	}
 
-				&[data-theme='dark']::after {
-					background-color: #e29186;
-				}
+	@media (prefers-color-scheme: dark) {
+		&:focus-visible {
+			outline-color: #e29186;
+		}
+	}
 
-				&[data-theme='light']::after {
-					background-color: #6d0a1f;
-				}
-			}
+	&::after {
+		display: block;
+		mask: url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="m8 12a4 4 0 1 0 8 0 4 4 0 1 0-8 0"/><path d="M16 12v1.5a2.5 2.5 0 0 0 5 0V12a9 9 0 1 0-5.5 8.28"/></g></svg>')
+			no-repeat center;
+		-webkit-mask: url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="m8 12a4 4 0 1 0 8 0 4 4 0 1 0-8 0"/><path d="M16 12v1.5a2.5 2.5 0 0 0 5 0V12a9 9 0 1 0-5.5 8.28"/></g></svg>')
+			no-repeat center;
+		transition: background-color 0.2s;
+		background-color: #6d0a1f;
+		width: max(0.9rem, 0.7em);
+		height: max(0.9rem, 0.7em);
+		content: '';
+	}
+
+	@media (prefers-color-scheme: dark) {
+		&::after {
+			background-color: #e29186;
+		}
+	}
+
+	&[data-theme='dark']::after {
+		background-color: #e29186;
+	}
+
+	&[data-theme='light']::after {
+		background-color: #6d0a1f;
+	}
+}
 		`;
 	}
 
@@ -104,9 +130,8 @@ class ExtensionController {
 	 * @returns {void}
 	 */
 	async init() {
-		import(browser.runtime.getURL('utils.js')).then((module) => {
-			this.#utils = module.Utils;
-		});
+		const module = await import(browser.runtime.getURL('utils.js'));
+		this.#utils = module.Utils;
 
 		browser.runtime.onMessage.addListener((message) => {
 			this.#handleRuntimeMessage(message);
@@ -223,47 +248,58 @@ class ExtensionController {
 	 * @param {HTMLInputElement|HTMLTextAreaElement} inputTarget - Input receiving focus.
 	 * @returns {void}
 	 */
-	#showIcon(inputTarget) {
+	async #showIcon(inputTarget) {
 		this.#domainIndex = 0;
 
 		if (!this.#hostElement) {
 			this.#hostElement = document.createElement('div');
 			this.#hostElement.id = 'DomainsWidgetRoot';
-			this.#hostElement.style.cssText =
-				'position: absolute; top: 0; left: 0; z-index: 2147483647; pointer-events: none;';
 
 			const shadowRoot = this.#hostElement.attachShadow({ mode: 'closed' });
 
 			const style = document.createElement('style');
 			style.textContent = ExtensionController.SHADOW_CSS;
 
-			const icon = document.createElement('div');
+			const icon = document.createElement('button');
+			icon.type = 'button';
 			icon.className = 'icon-wrapper';
+			icon.setAttribute('aria-label', 'Generate email alias');
 
-			icon.addEventListener('mousedown', async (event) => {
+			const storage = await this.#utils.getStorage();
+			const result = await storage.get(['aliasDomains']);
+			const domains = result.aliasDomains || [];
+
+			icon.title =
+				domains.length > 1
+					? 'Generate alias (Click or press Enter to cycle options)'
+					: 'Generate email alias';
+
+			const handleTrigger = async (event) => {
 				event.preventDefault();
 				event.stopPropagation();
 
-				const storage = await this.#utils.getStorage();
-				const result = await storage.get(['aliasDomains', 'includeTld']);
-				const domains = result.aliasDomains || [];
+				const currentStorage = await this.#utils.getStorage();
+				const currentResult = await currentStorage.get(['aliasDomains', 'includeTld']);
+				const currentDomains = currentResult.aliasDomains || [];
 
-				if (domains.length > 0) {
-					const currentDomainData = domains[this.#domainIndex];
+				if (currentDomains.length > 0) {
+					const currentDomainData = currentDomains[this.#domainIndex];
 					const domainName = currentDomainData.domain || currentDomainData;
 					const prefix = currentDomainData.prefix || '';
-					const includeTld = result.includeTld !== false;
+					const includeTld = currentResult.includeTld !== false;
 
 					this.triggerAliasInjection(domainName, {
 						prefix,
 						includeTld,
-						targetInput: inputTarget,
-						closeIcon: domains.length === 1,
+						targetInput: this.#activeInput,
+						closeIcon: currentDomains.length === 1,
 					});
 
-					this.#domainIndex = (this.#domainIndex + 1) % domains.length;
+					this.#domainIndex = (this.#domainIndex + 1) % currentDomains.length;
 				}
-			});
+			};
+
+			icon.addEventListener('click', handleTrigger);
 
 			this.#iconElement = icon;
 
@@ -271,7 +307,12 @@ class ExtensionController {
 
 			shadowRoot.appendChild(style);
 			shadowRoot.appendChild(icon);
-			document.body.appendChild(this.#hostElement);
+
+			if (inputTarget.parentNode) {
+				inputTarget.parentNode.insertBefore(this.#hostElement, inputTarget.nextSibling);
+			} else {
+				document.body.appendChild(this.#hostElement);
+			}
 
 			window.addEventListener('resize', this.#onLayoutChange);
 			window.addEventListener('scroll', this.#onLayoutChange, true);
@@ -310,8 +351,8 @@ class ExtensionController {
 		}
 
 		const rect = this.#activeInput.getBoundingClientRect();
-		this.#iconElement.style.top = `${window.scrollY + rect.top + rect.height / 2 - 12}px`;
-		this.#iconElement.style.left = `${window.scrollX + rect.right - 32}px`;
+		this.#iconElement.style.top = `${rect.top + rect.height / 2 - 12}px`;
+		this.#iconElement.style.left = `${rect.right - 32}px`;
 	}
 
 	/**
@@ -374,7 +415,11 @@ class ExtensionController {
 	 */
 	#handleFocusOut() {
 		setTimeout(() => {
-			if (this.#iconElement && document.activeElement !== this.#activeInput) {
+			if (
+				this.#iconElement
+				&& document.activeElement !== this.#activeInput
+				&& document.activeElement !== this.#hostElement
+			) {
 				this.#hideIcon();
 			}
 		}, 150);

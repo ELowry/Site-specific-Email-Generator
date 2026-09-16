@@ -146,6 +146,13 @@ h2 {
 	}
 }
 
+.empty-state {
+	opacity: 0.7;
+	border: var(--border-width) dashed var(--color-border);
+	padding: 2rem 1rem;
+	text-align: center;
+}
+
 .saved-aliases-grid {
 	display: flex;
 	flex-direction: column;

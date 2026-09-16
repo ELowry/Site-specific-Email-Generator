@@ -170,6 +170,11 @@ class BackgroundController {
 			typeof info.menuItemId === 'string'
 			&& info.menuItemId.startsWith(BackgroundController.FILL_PREFIX)
 		) {
+			if (!tab.url || (!tab.url.startsWith('http:') && !tab.url.startsWith('https:'))) {
+				console.warn('Cannot inject scripts into restricted browser pages.');
+				return;
+			}
+
 			const clickedDomain = info.menuItemId.substring(
 				BackgroundController.FILL_PREFIX.length
 			);
@@ -205,9 +210,14 @@ class BackgroundController {
 	 * @returns {void}
 	 */
 	#setupListeners() {
-		browser.storage.onChanged.addListener((changes, area) => {
-			if (area === 'sync' && changes.aliasDomains) {
-				this.#updateContextMenus(changes.aliasDomains.newValue);
+		browser.storage.onChanged.addListener(async (changes, area) => {
+			const storage = await Utils.getStorage();
+			const isUsingSync = storage === browser.storage.sync;
+
+			if ((isUsingSync && area === 'sync') || (!isUsingSync && area === 'local')) {
+				if (changes.aliasDomains) {
+					this.#updateContextMenus(changes.aliasDomains.newValue);
+				}
 			}
 
 			if (area === 'local' && changes.useSync) {

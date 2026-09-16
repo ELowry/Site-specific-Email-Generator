@@ -60,7 +60,6 @@ class OptionsController {
 		this.#useSyncToggle = document.querySelector('#UseSyncToggle');
 		this.#includeTldToggle = document.querySelector('#IncludeTLDToggle');
 		this.#deleteIconTemplate = document.querySelector('#template-deleteIcon');
-		this.#deleteIconTemplate = document.querySelector('#template-deleteIcon');
 		this.#dragIconTemplate = document.querySelector('#template-dragIcon');
 
 		this.#setupEventListeners();
@@ -77,6 +76,15 @@ class OptionsController {
 		}
 
 		this.#domainListContainer.replaceChildren();
+
+		if (this.#domains.length === 0) {
+			const emptyState = document.createElement('div');
+			emptyState.className = 'empty-state';
+			emptyState.textContent = 'No domains configured. Add your first domain below.';
+
+			this.#domainListContainer.appendChild(emptyState);
+			return;
+		}
 
 		const canDrag = this.#domains.length > 1;
 
@@ -354,20 +362,48 @@ class OptionsController {
 		const oldStorage = enableSync ? browser.storage.local : browser.storage.sync;
 		const newStorage = enableSync ? browser.storage.sync : browser.storage.local;
 
-		const allData = await oldStorage.get(null);
-		delete allData.useSync;
+		const oldData = await oldStorage.get(null);
+		const newData = await newStorage.get(null);
 
-		if (Object.keys(allData).length > 0) {
-			await newStorage.set(allData);
-			const keysToRemove = Object.keys(allData);
+		delete oldData.useSync;
+
+		if (oldData.aliasDomains && newData.aliasDomains) {
+			const mergedDomains = [...newData.aliasDomains];
+
+			for (const oldItem of oldData.aliasDomains) {
+				const oldDomain = oldItem.domain || oldItem;
+				const oldPrefix = oldItem.prefix || '';
+
+				const exists = mergedDomains.some((newItem) => {
+					const nDomain = newItem.domain || newItem;
+					const nPrefix = newItem.prefix || '';
+					return nDomain === oldDomain && nPrefix === oldPrefix;
+				});
+
+				if (!exists) {
+					mergedDomains.push(oldItem);
+				}
+			}
+			oldData.aliasDomains = mergedDomains;
+		}
+
+		if (Object.keys(oldData).length > 0) {
+			await newStorage.set(oldData);
+			const keysToRemove = Object.keys(oldData);
 			await oldStorage.remove(keysToRemove);
 		}
 
 		await browser.storage.local.set({ useSync: enableSync });
-		Feedback.showMessage(enableSync ? 'Sync enabled' : 'Sync disabled', {
-			type: 'success',
-			targetId: 'SettingsFeedback',
-		});
+
+		await this.#restoreOptions();
+
+		Feedback.showMessage(
+			enableSync ? 'Sync enabled (Data merged)' : 'Sync disabled (Data merged)',
+			{
+				type: 'success',
+				targetId: 'SettingsFeedback',
+			}
+		);
 	}
 
 	/**

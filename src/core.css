@@ -36,19 +36,6 @@
 	--scrollbar-colors: var(--scrollbar-thumb) var(--scrollbar-track);
 
 	scrollbar-color: var(--scrollbar-colors);
-	::-webkit-scrollbar-thumb {
-		background: var(--scrollbar-color-thumb);
-	}
-	::-webkit-scrollbar-track {
-		background: var(--scrollbar-color-track);
-	}
-	::-webkit-scrollbar {
-		max-width: var(--scrollbar-width-legacy);
-		max-height: var(--scrollbar-width-legacy);
-	}
-	:hover::-webkit-scrollbar-thumb {
-		background: var(--scrollbar-color-hover);
-	}
 
 	@media print, (prefers-color-scheme: light) {
 		--hex-background: #ddd8d6;
