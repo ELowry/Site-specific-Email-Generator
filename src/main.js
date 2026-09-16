@@ -43,12 +43,12 @@ class ExtensionController {
 	static get SHADOW_CSS() {
 		return `
 :host {
-	position: fixed;
-	top: 0;
-	left: 0;
+	display: block;
+	position: absolute;
 	z-index: 2147483647;
-	width: 100vw;
-	height: 100vh;
+	width: 0;
+	height: 0;
+	overflow: visible;
 	pointer-events: none;
 }
 
@@ -346,13 +346,18 @@ class ExtensionController {
 	 * @returns {void}
 	 */
 	#updateIconPosition() {
-		if (!this.#iconElement || !this.#activeInput) {
+		if (!this.#iconElement || !this.#activeInput || !this.#hostElement) {
 			return;
 		}
 
-		const rect = this.#activeInput.getBoundingClientRect();
-		this.#iconElement.style.top = `${rect.top + rect.height / 2 - 12}px`;
-		this.#iconElement.style.left = `${rect.right - 32}px`;
+		const inputRect = this.#activeInput.getBoundingClientRect();
+		const hostRect = this.#hostElement.getBoundingClientRect();
+
+		const relativeTop = inputRect.top - hostRect.top;
+		const relativeLeft = inputRect.left - hostRect.left;
+
+		this.#iconElement.style.top = `${relativeTop + inputRect.height / 2 - 12}px`;
+		this.#iconElement.style.left = `${relativeLeft + inputRect.width - 32}px`;
 	}
 
 	/**

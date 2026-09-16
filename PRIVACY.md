@@ -15,4 +15,4 @@ Your settings (custom domains, prefixes, and TLD inclusion toggles) are:
 
 ## Network Activity
 
-Unlike many extensions, the Site-Specific Email Generator makes absolutely zero external network requests. All site extraction and alias generation logic runs locally within the browser environment without relying on external APIs.
+Site-Specific Email Generator makes absolutely zero external network requests. All site extraction and alias generation logic runs locally within the browser environment without relying on external APIs.

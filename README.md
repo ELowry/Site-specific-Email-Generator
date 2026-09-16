@@ -11,12 +11,12 @@ This Firefox extension helps you easily sign up anywhere with a dedicated email 
 
 ## Features
 
-- **Password Autofill**:  
+- **Password Auto-fill**:  
   The extension tries to detect any email input field and injects a small button when it is focused. Clicking the icon instantly generates a unique email alias using the site's domain name.  
   _Note: If you have multiple domains registered, clicking the icon repeatedly cycles through them._  
   Some sites use custom code for email inputs, preventing the extension from adding the button, so you can also:
     - Automatically paste a generated email into any input field using the right-click button.
-    - Click the extension icon in your browser toolbar to open a popup that lets you copygenerated emails.
+    - Click the extension icon in your browser toolbar to open a popup that lets you copy generated emails.
 - **Optional Top-level Domain Inclusion**:  
   You can choose to include or exclude the top-level domain from generated emails (e.g., `some-website.com` ↔ `some-website`).
 - **Domain Configuration**:  
