@@ -20,12 +20,14 @@
 					</g>
 				</svg>
 			</div>
-			<h1>Email Generator</h1>
+			<h1 data-i18n="popupHeaderTitle">Email Generator</h1>
 			<button
 				id="SettingsButton"
 				class="btn-primary icon-only settings-btn"
 				title="Open Settings"
 				aria-label="Open Settings"
+				data-i18n-title="popupSettingsButtonAria"
+				data-i18n-aria-label="popupSettingsButtonAria"
 			>
 				<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 					<g
@@ -91,7 +93,9 @@
 
 		<template id="template-missingDomains">
 			<div style="text-align: center; padding: 1rem">
-				<p style="opacity: 0.8; margin-bottom: 1.5rem"> No domains configured. </p>
+				<p style="opacity: 0.8; margin-bottom: 1.5rem" data-i18n="popupEmptyStateMessage">
+					No domains configured.
+				</p>
 				<button id="OpenSettingsButton" class="btn-primary">
 					<svg
 						viewBox="0 0 24 24"
@@ -111,7 +115,7 @@
 							<path d="m9 12a3 3 0 1 0 6 0 3 3 0 0 0-6 0" />
 						</g>
 					</svg>
-					Go to Settings
+					<span data-i18n="popupGoToSettingsButton">Go to Settings</span>
 				</button>
 			</div>
 		</template>

@@ -1,4 +1,5 @@
 import { Feedback } from '../feedback.js';
+import { I18n } from '../i18n.js';
 import { Utils } from '../utils.js';
 
 /**
@@ -53,6 +54,8 @@ class OptionsController {
 	 * @returns {void}
 	 */
 	init() {
+		I18n.translateDom(document);
+
 		this.#newDomainInput = document.querySelector('#DomainInput');
 		this.#newPrefixInput = document.querySelector('#PrefixInput');
 		this.#domainListContainer = document.querySelector('#SavedDomains');
@@ -80,7 +83,7 @@ class OptionsController {
 		if (this.#domains.length === 0) {
 			const emptyState = document.createElement('div');
 			emptyState.className = 'empty-state';
-			emptyState.textContent = 'No domains configured. Add your first domain below.';
+			emptyState.textContent = I18n.getMessage('optionsDomainListEmptyState');
 
 			this.#domainListContainer.appendChild(emptyState);
 			return;
@@ -117,15 +120,18 @@ class OptionsController {
 
 			const siteIndicator = document.createElement('span');
 			siteIndicator.className = 'site-indicator';
-			siteIndicator.textContent = '[site]';
+			siteIndicator.textContent = I18n.getMessage('optionsDomainSiteIndicator');
 
 			entry.appendChild(siteIndicator);
 			entry.appendChild(document.createTextNode(`@${domainName}`));
 
 			const deleteButton = document.createElement('button');
 			deleteButton.className = 'btn-primary icon-only delete-btn';
-			deleteButton.title = 'Delete domain';
-			deleteButton.setAttribute('aria-label', `Delete ${domainName}`);
+			deleteButton.title = I18n.getMessage('optionsDeleteDomainButtonTitle');
+			deleteButton.setAttribute(
+				'aria-label',
+				I18n.getMessage('optionsDeleteDomainButtonAria', domainName)
+			);
 
 			if (this.#deleteIconTemplate) {
 				deleteButton.appendChild(this.#deleteIconTemplate.content.cloneNode(true));
@@ -236,7 +242,10 @@ class OptionsController {
 		const storage = await Utils.getStorage();
 		await storage.set({ aliasDomains: this.#domains });
 
-		Feedback.showMessage('Domains updated', { type: 'success', targetId: 'DomainsFeedback' });
+		Feedback.showMessage(I18n.getMessage('messageDomainsUpdatedSuccess'), {
+			type: 'success',
+			targetId: 'DomainsFeedback',
+		});
 	}
 
 	/**
@@ -263,7 +272,7 @@ class OptionsController {
 		const prefixVal = this.#newPrefixInput.value.trim();
 
 		if (!domainVal) {
-			Feedback.showMessage('Please enter a domain', {
+			Feedback.showMessage(I18n.getMessage('messageEnterDomainError'), {
 				type: 'error',
 				targetId: 'DomainsFeedback',
 			});
@@ -275,7 +284,7 @@ class OptionsController {
 		});
 
 		if (exists) {
-			Feedback.showMessage('Domain and prefix combination already exists', {
+			Feedback.showMessage(I18n.getMessage('messageDomainExistsError'), {
 				type: 'error',
 				targetId: 'DomainsFeedback',
 			});
@@ -349,7 +358,10 @@ class OptionsController {
 			: true;
 
 		await storage.set({ includeTld });
-		Feedback.showMessage('Settings saved', { type: 'success', targetId: 'SettingsFeedback' });
+		Feedback.showMessage(I18n.getMessage('messageSettingsSavedSuccess'), {
+			type: 'success',
+			targetId: 'SettingsFeedback',
+		});
 	}
 
 	/**
@@ -398,7 +410,9 @@ class OptionsController {
 		await this.#restoreOptions();
 
 		Feedback.showMessage(
-			enableSync ? 'Sync enabled (Data merged)' : 'Sync disabled (Data merged)',
+			enableSync
+				? I18n.getMessage('messageSyncEnabledSuccess')
+				: I18n.getMessage('messageSyncDisabledSuccess'),
 			{
 				type: 'success',
 				targetId: 'SettingsFeedback',

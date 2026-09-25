@@ -1,0 +1,178 @@
+{
+	"extensionName": {
+		"message": "Site-Specific Email Generator",
+		"description": "The official name of the extension displayed in the browser's extension manager and web store."
+	},
+	"extensionDescription": {
+		"message": "Protect your real inbox by instantly generating and autofilling unique email addresses for every website using your personal domain.",
+		"description": "A short summary of what the extension does, displayed in the browser's extension manager."
+	},
+	"extensionActionTitle": {
+		"message": "Site-Specific Email Generator",
+		"description": "The tooltip text that appears when a user hovers over the extension's icon in the browser toolbar."
+	},
+	"optionsPageTitle": {
+		"message": "Email Generator Settings",
+		"description": "The text displayed in the browser tab when the user opens the extension's settings page."
+	},
+	"optionsHeaderTitle": {
+		"message": "Email Generator",
+		"description": "The main heading title at the top of the settings page."
+	},
+	"optionsHeaderSubtitle": {
+		"message": "Manage your custom domains for smart email generation.",
+		"description": "A short subtitle below the main heading on the settings page explaining the page's purpose."
+	},
+	"optionsSettingsHeader": {
+		"message": "Extension Settings",
+		"description": "The section header for general extension behavior settings."
+	},
+	"optionsSyncToggleLabel": {
+		"message": "Enable Firefox Sync (sync settings across devices)",
+		"description": "The text label for a toggle switch that turns on cloud synchronization for the user's data."
+	},
+	"optionsIncludeTldToggleLabel": {
+		"message": "Include TLD in alias (netflix -> netflix.com)",
+		"description": "The text label for a toggle switch determining whether the Top Level Domain (like .com) is included in the generated email alias."
+	},
+	"optionsDomainsHeader": {
+		"message": "Domain Configuration",
+		"description": "The section header for managing the user's custom domains."
+	},
+	"optionsDomainsDescription": {
+		"message": "Add the domains you want to use for your email aliases.",
+		"description": "Instructions explaining what the domain configuration section is used for."
+	},
+	"optionsPrefixInputPlaceholder": {
+		"message": "Prefix",
+		"description": "Placeholder text inside the text input where users can type an optional prefix for their email aliases."
+	},
+	"optionsPrefixInputTitle": {
+		"message": "Only letters, numbers, periods, underscores, hyphens, and plus signs are allowed.",
+		"description": "The validation error message and tooltip shown when a user enters invalid characters into the prefix field."
+	},
+	"optionsPrefixOptionalSuffix": {
+		"message": "Optional",
+		"description": "A small visual indicator next to the prefix input field telling the user that filling out this field is not strictly required."
+	},
+	"optionsDomainInputPlaceholder": {
+		"message": "Domain name",
+		"description": "Placeholder text inside the text input where users type their custom domain name."
+	},
+	"optionsDomainInputTitle": {
+		"message": "Please enter a valid domain name (e.g., example.com)",
+		"description": "The validation error message and tooltip shown when a user enters an improperly formatted domain name."
+	},
+	"optionsAddDomainButtonAria": {
+		"message": "Add Domain",
+		"description": "The accessibility label and tooltip for the button used to submit and save a new domain."
+	},
+	"optionsDomainListEmptyState": {
+		"message": "No domains configured. Add your first domain below.",
+		"description": "The message displayed on the settings page when the user has not added any custom domains yet."
+	},
+	"optionsDomainSiteIndicator": {
+		"message": "[site]",
+		"description": "A visual placeholder string shown in the settings menu representing where the active website's name will be injected into the generated email (e.g., prefix[site]@domain.com)."
+	},
+	"optionsDeleteDomainButtonTitle": {
+		"message": "Delete domain",
+		"description": "The tooltip text shown when hovering over the trash can button next to a saved domain."
+	},
+	"optionsDeleteDomainButtonAria": {
+		"message": "Delete $DOMAIN$",
+		"description": "The accessibility label for the trash can button, indicating exactly which domain will be deleted.",
+		"placeholders": {
+			"domain": {
+				"content": "$1",
+				"example": "example.com"
+			}
+		}
+	},
+	"messageDomainsUpdatedSuccess": {
+		"message": "Domains updated",
+		"description": "A temporary success message shown on the screen after the user adds, deletes, or reorders a domain."
+	},
+	"messageEnterDomainError": {
+		"message": "Please enter a domain",
+		"description": "An error message shown when the user tries to save a new domain but left the domain input field blank."
+	},
+	"messageDomainExistsError": {
+		"message": "Domain and prefix combination already exists",
+		"description": "An error message shown when the user tries to save a domain and prefix pair that is already in their saved list."
+	},
+	"messageSettingsSavedSuccess": {
+		"message": "Settings saved",
+		"description": "A temporary success message shown on the screen when the user toggles a general extension setting."
+	},
+	"messageSyncEnabledSuccess": {
+		"message": "Sync enabled (Data merged)",
+		"description": "A temporary success message shown on the screen when the user turns on cloud synchronization."
+	},
+	"messageSyncDisabledSuccess": {
+		"message": "Sync disabled (Data merged)",
+		"description": "A temporary success message shown on the screen when the user turns off cloud synchronization."
+	},
+	"popupHeaderTitle": {
+		"message": "Email Generator",
+		"description": "The main title displayed at the top of the extension's toolbar popup."
+	},
+	"popupSettingsButtonAria": {
+		"message": "Open Settings",
+		"description": "The accessibility label and tooltip for the gear icon button in the toolbar popup that opens the settings page."
+	},
+	"popupEmptyStateMessage": {
+		"message": "No domains configured.",
+		"description": "The message displayed in the toolbar popup when the user has not added any custom domains yet."
+	},
+	"popupGoToSettingsButton": {
+		"message": "Go to Settings",
+		"description": "The text on the button in the toolbar popup that redirects users to the configuration page when they have no domains set up."
+	},
+	"popupCopyButtonTitle": {
+		"message": "Copy to clipboard",
+		"description": "The tooltip shown when hovering over the copy icon next to a generated email alias in the toolbar popup."
+	},
+	"messageCopiedToClipboardSuccess": {
+		"message": "Copied to clipboard!",
+		"description": "A temporary success message shown in the toolbar popup after the user successfully copies an email address."
+	},
+	"messageCopyToClipboardFailedError": {
+		"message": "Failed to copy",
+		"description": "An error message shown in the toolbar popup if the browser prevents the extension from copying the email to the clipboard."
+	},
+	"backgroundMenuConfigureSettings": {
+		"message": "Configure Alias Settings…",
+		"description": "The text displayed in the browser's right-click context menu when the user needs to set up the extension for the first time."
+	},
+	"backgroundMenuGenerateAliasWithPrefix": {
+		"message": "Generate Alias ($PREFIX$[site]@$DOMAIN$)",
+		"description": "The text displayed in the browser's right-click context menu showing the exact format of the email that will be generated, including their chosen prefix.",
+		"placeholders": {
+			"prefix": {
+				"content": "$1",
+				"example": "spam."
+			},
+			"domain": {
+				"content": "$2",
+				"example": "example.com"
+			}
+		}
+	},
+	"backgroundMenuGenerateAlias": {
+		"message": "Generate Email Alias",
+		"description": "The text displayed in the browser's right-click context menu that users click to generate and fill an email alias into a web page."
+	},
+	"contentScriptIconAriaLabel": {
+		"message": "Generate email alias",
+		"description": "The accessibility label for the small icon injected directly into email input fields on web pages."
+	},
+	"contentScriptIconTitleMultipleDomains": {
+		"message": "Generate alias (Click or press Enter to cycle options)",
+		"description": "The tooltip for the small icon injected into email input fields, letting users know they can click repeatedly to cycle through multiple saved domains."
+	},
+	"contentScriptIconTitleSingleDomain": {
+		"message": "Generate email alias",
+		"description": "The tooltip for the small icon injected into email input fields when the user only has one saved domain."
+	}
+}

@@ -1,0 +1,135 @@
+{
+	"extensionName": {
+		"message": "Site-Specific Email Generator"
+	},
+	"extensionDescription": {
+		"message": "Protégez votre boîte de réception en générant et en remplissant automatiquement des adresses email uniques pour chaque site web avec votre propre nom de domaine."
+	},
+	"extensionActionTitle": {
+		"message": "Site-Specific Email Generator"
+	},
+	"optionsPageTitle": {
+		"message": "Paramètres du générateur d'emails"
+	},
+	"optionsHeaderTitle": {
+		"message": "Générateur d'emails"
+	},
+	"optionsHeaderSubtitle": {
+		"message": "Gérez vos noms de domaine pour la génération automatique d'emails."
+	},
+	"optionsSettingsHeader": {
+		"message": "Paramètres de l'extension"
+	},
+	"optionsSyncToggleLabel": {
+		"message": "Activer Firefox Sync (synchronisation entre vos appareils)"
+	},
+	"optionsIncludeTldToggleLabel": {
+		"message": "Inclure le TLD dans l'alias (netflix -> netflix.com)"
+	},
+	"optionsDomainsHeader": {
+		"message": "Configuration des domaines"
+	},
+	"optionsDomainsDescription": {
+		"message": "Ajoutez les noms de domaine à utiliser pour générer vos alias."
+	},
+	"optionsPrefixInputPlaceholder": {
+		"message": "Préfixe"
+	},
+	"optionsPrefixInputTitle": {
+		"message": "Seuls les lettres, chiffres, points, tirets, underscores et le signe plus sont autorisés."
+	},
+	"optionsPrefixOptionalSuffix": {
+		"message": "Facultatif"
+	},
+	"optionsDomainInputPlaceholder": {
+		"message": "Nom de domaine"
+	},
+	"optionsDomainInputTitle": {
+		"message": "Veuillez entrer un nom de domaine valide (ex: example.com)"
+	},
+	"optionsAddDomainButtonAria": {
+		"message": "Ajouter un domaine"
+	},
+	"optionsDomainListEmptyState": {
+		"message": "Aucun domaine configuré. Ajoutez votre premier domaine ci-dessous."
+	},
+	"optionsDomainSiteIndicator": {
+		"message": "[site]"
+	},
+	"optionsDeleteDomainButtonTitle": {
+		"message": "Supprimer le domaine"
+	},
+	"optionsDeleteDomainButtonAria": {
+		"message": "Supprimer $DOMAIN$",
+		"placeholders": {
+			"domain": {
+				"content": "$1"
+			}
+		}
+	},
+	"messageDomainsUpdatedSuccess": {
+		"message": "Domaines mis à jour"
+	},
+	"messageEnterDomainError": {
+		"message": "Veuillez entrer un nom de domaine"
+	},
+	"messageDomainExistsError": {
+		"message": "Ce domaine et son préfixe sont déjà présents"
+	},
+	"messageSettingsSavedSuccess": {
+		"message": "Paramètres enregistrés"
+	},
+	"messageSyncEnabledSuccess": {
+		"message": "Synchronisation activée (données fusionnées)"
+	},
+	"messageSyncDisabledSuccess": {
+		"message": "Synchronisation désactivée (données fusionnées)"
+	},
+	"popupHeaderTitle": {
+		"message": "Générateur d'emails"
+	},
+	"popupSettingsButtonAria": {
+		"message": "Ouvrir les paramètres"
+	},
+	"popupEmptyStateMessage": {
+		"message": "Aucun domaine configuré."
+	},
+	"popupGoToSettingsButton": {
+		"message": "Ouvrir les paramètres"
+	},
+	"popupCopyButtonTitle": {
+		"message": "Copier dans le presse-papiers"
+	},
+	"messageCopiedToClipboardSuccess": {
+		"message": "Copié dans le presse-papiers!"
+	},
+	"messageCopyToClipboardFailedError": {
+		"message": "Échec de la copie"
+	},
+	"backgroundMenuConfigureSettings": {
+		"message": "Configurer les paramètres d'alias…"
+	},
+	"backgroundMenuGenerateAliasWithPrefix": {
+		"message": "Générer l'alias ($PREFIX$[site]@$DOMAIN$)",
+		"placeholders": {
+			"prefix": {
+				"content": "$1"
+			},
+			"domain": {
+				"content": "$2"
+			}
+		}
+	},
+	"backgroundMenuGenerateAlias": {
+		"message": "Générer un alias d'email"
+	},
+	"contentScriptIconAriaLabel": {
+		"message": "Générer un alias d'email"
+	},
+	"contentScriptIconTitleMultipleDomains": {
+		"message": "Générer un alias (cliquez ou appuyez sur Entrée pour faire défiler les options)"
+	},
+	"contentScriptIconTitleSingleDomain": {
+		"message": "Générer un alias d'email"
+	}
+}

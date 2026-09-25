@@ -1,8 +1,9 @@
 {
 	"manifest_version": 3,
-	"name": "Site-Specific Email Generator",
+	"name": "__MSG_extensionName__",
 	"version": "1.0.2",
-	"description": "Protect your real inbox by instantly generating and autofilling unique email addresses for every website using your personal domain.",
+	"description": "__MSG_extensionDescription__",
+	"default_locale": "en",
 	"browser_specific_settings": {
 		"gecko": {
 			"id": "rouge.email-generator@eric-lowry.com",
@@ -16,7 +17,7 @@
 	"permissions": ["storage", "contextMenus", "activeTab", "scripting"],
 	"web_accessible_resources": [
 		{
-			"resources": ["utils.js"],
+			"resources": ["utils.js", "i18n.js"],
 			"matches": ["<all_urls>"]
 		}
 	],
@@ -27,7 +28,7 @@
 		}
 	],
 	"action": {
-		"default_title": "Site-Specific Email Generator",
+		"default_title": "__MSG_extensionActionTitle__",
 		"default_popup": "popup/popup.html"
 	},
 	"background": {

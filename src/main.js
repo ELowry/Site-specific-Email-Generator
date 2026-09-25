@@ -17,6 +17,9 @@ class ExtensionController {
 	/** @type {Object|null} */
 	#utils = null;
 
+	/** @type {Object|null} */
+	#i18n = null;
+
 	/** @type {number} */
 	#domainIndex = 0;
 
@@ -24,6 +27,7 @@ class ExtensionController {
 		this.#hostElement = null;
 		this.#iconElement = null;
 		this.#activeInput = null;
+		this.#i18n = null;
 		this.#domainIndex = 0;
 		this.#onLayoutChange = () => {
 			if (this.#iconElement && this.#activeInput) {
@@ -132,6 +136,9 @@ class ExtensionController {
 	async init() {
 		const module = await import(browser.runtime.getURL('utils.js'));
 		this.#utils = module.Utils;
+
+		const i18nModule = await import(browser.runtime.getURL('i18n.js'));
+		this.#i18n = i18nModule.I18n;
 
 		browser.runtime.onMessage.addListener((message) => {
 			this.#handleRuntimeMessage(message);
@@ -263,7 +270,7 @@ class ExtensionController {
 			const icon = document.createElement('button');
 			icon.type = 'button';
 			icon.className = 'icon-wrapper';
-			icon.setAttribute('aria-label', 'Generate email alias');
+			icon.setAttribute('aria-label', this.#i18n.getMessage('contentScriptIconAriaLabel'));
 
 			const storage = await this.#utils.getStorage();
 			const result = await storage.get(['aliasDomains']);
@@ -271,8 +278,8 @@ class ExtensionController {
 
 			icon.title =
 				domains.length > 1
-					? 'Generate alias (Click or press Enter to cycle options)'
-					: 'Generate email alias';
+					? this.#i18n.getMessage('contentScriptIconTitleMultipleDomains')
+					: this.#i18n.getMessage('contentScriptIconTitleSingleDomain');
 
 			const handleTrigger = async (event) => {
 				event.preventDefault();

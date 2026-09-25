@@ -1,3 +1,4 @@
+import { I18n } from './i18n.js';
 import { Utils } from './utils.js';
 
 /**
@@ -81,7 +82,7 @@ class BackgroundController {
 			browser.contextMenus.create(
 				{
 					id: BackgroundController.CONFIGURE_MENU_ID,
-					title: 'Configure Alias Settings...',
+					title: I18n.getMessage('backgroundMenuConfigureSettings'),
 					contexts: ['all'],
 					icons: menuIcon,
 				},
@@ -100,8 +101,11 @@ class BackgroundController {
 				{
 					id: BackgroundController.#getDomainMenuId(domainName, prefix),
 					title: prefix
-						? `Generate Alias (${prefix}[site]@${domainName})`
-						: 'Generate Email Alias',
+						? I18n.getMessage('backgroundMenuGenerateAliasWithPrefix', [
+								prefix,
+								domainName,
+							])
+						: I18n.getMessage('backgroundMenuGenerateAlias'),
 					contexts: ['editable'],
 					icons: menuIcon,
 				},
@@ -116,7 +120,7 @@ class BackgroundController {
 		browser.contextMenus.create(
 			{
 				id: parentId,
-				title: 'Generate Email Alias',
+				title: I18n.getMessage('backgroundMenuGenerateAlias'),
 				contexts: ['editable'],
 				icons: menuIcon,
 			},

@@ -1,4 +1,5 @@
 import { Feedback } from '../feedback.js';
+import { I18n } from '../i18n.js';
 import { Utils } from '../utils.js';
 
 /**
@@ -33,6 +34,8 @@ class PopupController {
 	 * @returns {void}
 	 */
 	init() {
+		I18n.translateDom(document);
+
 		this.#aliasListContainer = document.getElementById('DomainsContainer');
 		this.#settingsBtn = document.getElementById('SettingsButton');
 		this.#copyIconTemplate = document.getElementById('template-copyIcon');
@@ -67,7 +70,9 @@ class PopupController {
 					);
 				}
 
-				Feedback.showMessage('Copied to clipboard!', { type: 'success' });
+				Feedback.showMessage(I18n.getMessage('messageCopiedToClipboardSuccess'), {
+					type: 'success',
+				});
 
 				setTimeout(() => {
 					buttonElement.classList.remove('success');
@@ -80,7 +85,9 @@ class PopupController {
 				}, Feedback.DEFAULT_DURATION);
 			})
 			.catch(() => {
-				Feedback.showMessage('Failed to copy', { type: 'error' });
+				Feedback.showMessage(I18n.getMessage('messageCopyToClipboardFailedError'), {
+					type: 'error',
+				});
 			});
 	}
 
@@ -101,6 +108,7 @@ class PopupController {
 		if (configuredDomains.length === 0) {
 			if (this.#noDomainsTemplate) {
 				const noDomainsContent = this.#noDomainsTemplate.content.cloneNode(true);
+				I18n.translateDom(noDomainsContent);
 				this.#aliasListContainer.replaceChildren(noDomainsContent);
 
 				const goToSettingsBtn = document.getElementById('OpenSettingsButton');
@@ -159,7 +167,9 @@ class PopupController {
 
 			const copyButton = document.createElement('button');
 			copyButton.className = 'copy-icon-btn';
-			copyButton.title = 'Copy to clipboard';
+			const copyTitle = I18n.getMessage('popupCopyButtonTitle');
+			copyButton.title = copyTitle;
+			copyButton.setAttribute('aria-label', copyTitle);
 
 			if (this.#copyIconTemplate) {
 				copyButton.appendChild(this.#copyIconTemplate.content.cloneNode(true));

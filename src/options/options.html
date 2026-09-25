@@ -8,7 +8,7 @@
 		<meta name="theme-color" content="#e29186" />
 		<meta name="theme-color" content="#6d0a1f" media="(prefers-color-scheme: light)" />
 
-		<title>Email Generator Settings</title>
+		<title data-i18n="optionsPageTitle">Email Generator Settings</title>
 		<meta name="author" content="Eric Lowry" />
 
 		<link rel="stylesheet" href="options.css" />
@@ -37,14 +37,16 @@
 					</svg>
 				</div>
 				<div>
-					<h1>Email Generator</h1>
-					<p class="subtitle">Manage your custom domains for smart email generation.</p>
+					<h1 data-i18n="optionsHeaderTitle">Email Generator</h1>
+					<p class="subtitle" data-i18n="optionsHeaderSubtitle"
+						>Manage your custom domains for smart email generation.</p
+					>
 				</div>
 			</header>
 
 			<section class="block modal-box">
 				<div class="modal-content">
-					<h2>Extension Settings</h2>
+					<h2 data-i18n="optionsSettingsHeader">Extension Settings</h2>
 					<div class="settings-list" role="menu">
 						<button
 							role="menuitemcheckbox"
@@ -53,7 +55,7 @@
 							id="UseSyncToggle"
 						>
 							<span class="switch-track"></span>
-							<span class="switch-label"
+							<span class="switch-label" data-i18n="optionsSyncToggleLabel"
 								>Enable Firefox Sync (sync settings across devices)</span
 							>
 						</button>
@@ -64,7 +66,7 @@
 							id="IncludeTLDToggle"
 						>
 							<span class="switch-track"></span>
-							<span class="switch-label"
+							<span class="switch-label" data-i18n="optionsIncludeTldToggleLabel"
 								>Include TLD in alias (netflix -> netflix.com)</span
 							>
 						</button>
@@ -77,8 +79,8 @@
 
 			<section class="block modal-box">
 				<div class="modal-content">
-					<h2>Domain Configuration</h2>
-					<p class="description"
+					<h2 data-i18n="optionsDomainsHeader">Domain Configuration</h2>
+					<p class="description" data-i18n="optionsDomainsDescription"
 						>Add the domains you want to use for your email aliases.</p
 					>
 
@@ -93,8 +95,12 @@
 								placeholder="Prefix"
 								pattern="^[a-zA-Z0-9._+\-]*$"
 								title="Only letters, numbers, periods, underscores, hyphens, and plus signs are allowed."
+								data-i18n-placeholder="optionsPrefixInputPlaceholder"
+								data-i18n-title="optionsPrefixInputTitle"
 							/>
-							<span class="input-suffix">Optional</span>
+							<span class="input-suffix" data-i18n="optionsPrefixOptionalSuffix"
+								>Optional</span
+							>
 						</div>
 						<div class="input-with-icon">
 							<div class="input-icon">
@@ -120,6 +126,8 @@
 								placeholder="Domain name"
 								pattern="^([a-zA-Z0-9\-]+\.)+[a-zA-Z]{2,}$"
 								title="Please enter a valid domain name (e.g., example.com)"
+								data-i18n-placeholder="optionsDomainInputPlaceholder"
+								data-i18n-title="optionsDomainInputTitle"
 							/>
 						</div>
 						<button
@@ -127,6 +135,8 @@
 							class="btn-primary icon-only"
 							aria-label="Add Domain"
 							title="Add Domain"
+							data-i18n-aria-label="optionsAddDomainButtonAria"
+							data-i18n-title="optionsAddDomainButtonAria"
 						>
 							<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 								<path
