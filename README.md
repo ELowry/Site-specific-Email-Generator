@@ -1,4 +1,4 @@
-[![License: MIT](https://img.shields.io/badge/License-MIT-3d383b.svg)](LICENSE) [![Latest GitHub release](https://img.shields.io/github/v/release/ELowry/Site-specific-Email-Generator?logo=GitHub&color=a4785e)](https://github.com/ELowry/Site-specific-Email-Generator/releases/latest) [![Mozilla Add-on Users](https://img.shields.io/amo/users/site-specific-email-generator?logo=firefox&color=e19085)](https://addons.mozilla.org/en-US/firefox/addon/site-specific-email-generator/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-3d383b.svg)](LICENSE) [![Latest GitHub release](https://img.shields.io/github/v/release/ELowry/Site-specific-Email-Generator?logo=GitHub&color=a4785e)](https://github.com/ELowry/Site-specific-Email-Generator/releases/latest) [![Mozilla Add-on Users](https://img.shields.io/amo/users/site-specific-email-generator?logo=firefox&color=e19085)](https://addons.mozilla.org/en-US/firefox/addon/site-specific-email-generator/) [![Translation status](https://hosted.weblate.org/widget/elowry/site-specific-email-generator/svg-badge.svg)](https://hosted.weblate.org/engage/elowry/)
 
 # [![Site-specific Email Generator](logo.png)](#)
 
@@ -50,6 +50,10 @@ For full details on how data and network requests are handled, please read the [
 ## Building from Source
 
 Please refer to the dedicated [AMO README](AMO-README.md) file for full instructions.
+
+## Translation Status
+
+[![Translation status](https://hosted.weblate.org/widget/elowry/site-specific-email-generator/multi-auto.svg)](https://hosted.weblate.org/engage/elowry/)
 
 ## License
 
