@@ -22,13 +22,21 @@ This Firefox extension helps you easily sign up anywhere with a dedicated email 
 - **Domain Configuration**:  
   The options page lets you add multiple domains and/or choose to add prefixes to generated emails (e.g., `spam.some-website@yourdomain.com`).
 
+> [!TIP]  
+> You can hold `Shift` whenever generating or copying an email alias to automatically append a somewhat random value after the site identifier. This can be nice when multiple emails are necessary for a single website.
+
 > [!NOTE]  
-> **Privacy-First & Local Execution**  
+> **Privacy-First & Local Execution**  
 > All extraction and generation logic runs 100% locally in your browser without phoning home to external APIs. Settings can be kept local or synced securely via Firefox Sync.
 
-## Installation & Setup
+## Installation & Setup
 
-_Coming Soon!_
+- Desktop: **[Download it from the Firefox Add-ons store](https://addons.mozilla.org/addon/site-specific-email-generator/)**.
+- Android: **[Download it from the Firefox Add-ons store](https://addons.mozilla.org/android/addon/site-specific-email-generator/)**.
+
+1. Open the extension's **Options** page (click the gear icon in the toolbar popup or right-click the extension icon and select "Manage Extension").
+2. Enter your custom **Domain name** (e.g., `yourdomain.com`) and optional **prefix**.
+3. Click the **+** button to add the domain to your saved list.
 
 ## Usage
 

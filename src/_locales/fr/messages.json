@@ -67,6 +67,12 @@
 			}
 		}
 	},
+	"optionsDomainsTip": {
+		"message": "Maintenez <kbd>Maj</kbd> lors de la génération ou de la copie d'un email pour inclure une valeur <i>aléatoire</i> après l'identifiant du site."
+	},
+	"optionsTipTitle": {
+		"message": "Astuce"
+	},
 	"messageDomainsUpdatedSuccess": {
 		"message": "Domaines mis à jour"
 	},
@@ -100,6 +106,9 @@
 	"popupCopyButtonTitle": {
 		"message": "Copier dans le presse-papiers"
 	},
+	"popupCopyUniqueButtonTitle": {
+		"message": "Copier avec un identifiant unique"
+	},
 	"messageCopiedToClipboardSuccess": {
 		"message": "Copié dans le presse-papiers!"
 	},
@@ -126,10 +135,19 @@
 	"contentScriptIconAriaLabel": {
 		"message": "Générer un alias d'email"
 	},
+	"contentScriptIconUniqueAriaLabel": {
+		"message": "Générer un alias d'email unique"
+	},
 	"contentScriptIconTitleMultipleDomains": {
 		"message": "Générer un alias (cliquez ou appuyez sur Entrée pour faire défiler les options)"
 	},
+	"contentScriptIconUniqueTitleMultipleDomains": {
+		"message": "Générer un alias unique (cliquez ou appuyez sur Entrée pour faire défiler les options)"
+	},
 	"contentScriptIconTitleSingleDomain": {
 		"message": "Générer un alias d'email"
+	},
+	"contentScriptIconUniqueTitleSingleDomain": {
+		"message": "Générer un alias d'email unique"
 	}
 }

@@ -89,6 +89,14 @@
 			}
 		}
 	},
+	"optionsDomainsTip": {
+		"message": "Hold <kbd>Shift</kbd> when generating or copying an email to include a <i>random</i> value after the site identifier.",
+		"description": "A small tip displayed in the options page to inform users about the Shift modifier key functionality."
+	},
+	"optionsTipTitle": {
+		"message": "Tip",
+		"description": "The title of the tip section on the options page."
+	},
 	"messageDomainsUpdatedSuccess": {
 		"message": "Domains updated",
 		"description": "A temporary success message shown on the screen after the user adds, deletes, or reorders a domain."
@@ -133,6 +141,10 @@
 		"message": "Copy to clipboard",
 		"description": "The tooltip shown when hovering over the copy icon next to a generated email alias in the toolbar popup."
 	},
+	"popupCopyUniqueButtonTitle": {
+		"message": "Copy with unique ID",
+		"description": "The tooltip shown when hovering over the unique copy icon next to a generated email alias in the toolbar popup."
+	},
 	"messageCopiedToClipboardSuccess": {
 		"message": "Copied to clipboard!",
 		"description": "A temporary success message shown in the toolbar popup after the user successfully copies an email address."
@@ -167,12 +179,24 @@
 		"message": "Generate email alias",
 		"description": "The accessibility label for the small icon injected directly into email input fields on web pages."
 	},
+	"contentScriptIconUniqueAriaLabel": {
+		"message": "Generate unique email alias",
+		"description": "The accessibility label for the injected icon when Shift is held."
+	},
 	"contentScriptIconTitleMultipleDomains": {
 		"message": "Generate alias (Click or press Enter to cycle options)",
 		"description": "The tooltip for the small icon injected into email input fields, letting users know they can click repeatedly to cycle through multiple saved domains."
 	},
+	"contentScriptIconUniqueTitleMultipleDomains": {
+		"message": "Generate unique alias (Click or press Enter to cycle options)",
+		"description": "The tooltip for the injected icon when Shift is held, with multiple domains saved."
+	},
 	"contentScriptIconTitleSingleDomain": {
 		"message": "Generate email alias",
 		"description": "The tooltip for the small icon injected into email input fields when the user only has one saved domain."
+	},
+	"contentScriptIconUniqueTitleSingleDomain": {
+		"message": "Generate unique email alias",
+		"description": "The tooltip for the injected icon when Shift is held and only one domain is saved."
 	}
 }

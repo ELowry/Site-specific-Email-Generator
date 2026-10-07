@@ -195,6 +195,7 @@ class BackgroundController {
 				return itemDomain === clickedDomain && itemPrefix === clickedPrefix;
 			});
 			const prefix = matchedDomain && matchedDomain.prefix ? matchedDomain.prefix : '';
+			const isUnique = Boolean(info.modifiers && info.modifiers.includes('Shift'));
 
 			try {
 				await browser.scripting.executeScript({
@@ -207,6 +208,7 @@ class BackgroundController {
 					domain: clickedDomain,
 					prefix,
 					includeTld: result.includeTld !== false,
+					isUnique,
 				});
 			} catch (error) {
 				console.error('Failed to inject script: ', error);

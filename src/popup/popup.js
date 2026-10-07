@@ -16,17 +16,25 @@ class PopupController {
 	#copyIconTemplate;
 
 	/** @type {HTMLTemplateElement|null} */
+	#hashIconTemplate;
+
+	/** @type {HTMLTemplateElement|null} */
 	#successIconTemplate;
 
 	/** @type {HTMLTemplateElement|null} */
 	#noDomainsTemplate;
 
+	/** @type {boolean} */
+	#isModifierDown;
+
 	constructor() {
 		this.#aliasListContainer = null;
 		this.#settingsBtn = null;
 		this.#copyIconTemplate = null;
+		this.#hashIconTemplate = null;
 		this.#successIconTemplate = null;
 		this.#noDomainsTemplate = null;
+		this.#isModifierDown = false;
 	}
 
 	/**
@@ -39,6 +47,7 @@ class PopupController {
 		this.#aliasListContainer = document.getElementById('DomainsContainer');
 		this.#settingsBtn = document.getElementById('SettingsButton');
 		this.#copyIconTemplate = document.getElementById('template-copyIcon');
+		this.#hashIconTemplate = document.getElementById('template-hashIcon');
 		this.#successIconTemplate = document.getElementById('template-successIcon');
 		this.#noDomainsTemplate = document.getElementById('template-missingDomains');
 
@@ -48,7 +57,51 @@ class PopupController {
 			});
 		}
 
+		document.addEventListener('keydown', (event) => {
+			if (event.key === 'Shift' && !this.#isModifierDown) {
+				this.#isModifierDown = true;
+				this.#updateButtonStates();
+			}
+		});
+
+		document.addEventListener('keyup', (event) => {
+			if (event.key === 'Shift' && this.#isModifierDown) {
+				this.#isModifierDown = false;
+				this.#updateButtonStates();
+			}
+		});
+
 		this.#loadAndRender();
+	}
+
+	/**
+	 * Updates copy button icons and titles based on the modifier key state.
+	 * @private
+	 * @returns {void}
+	 */
+	#updateButtonStates() {
+		const buttons = this.#aliasListContainer?.querySelectorAll('.copy-icon-btn');
+		if (!buttons) {
+			return;
+		}
+
+		const title = this.#isModifierDown
+			? I18n.getMessage('popupCopyUniqueButtonTitle')
+			: I18n.getMessage('popupCopyButtonTitle');
+
+		const template = this.#isModifierDown ? this.#hashIconTemplate : this.#copyIconTemplate;
+
+		buttons.forEach((btn) => {
+			if (btn.classList.contains('success')) {
+				return;
+			}
+
+			btn.title = title;
+			btn.setAttribute('aria-label', title);
+			if (template) {
+				btn.replaceChildren(template.content.cloneNode(true));
+			}
+		});
 	}
 
 	/**
@@ -77,10 +130,19 @@ class PopupController {
 				setTimeout(() => {
 					buttonElement.classList.remove('success');
 
-					if (this.#copyIconTemplate) {
-						buttonElement.replaceChildren(
-							this.#copyIconTemplate.content.cloneNode(true)
-						);
+					const title = this.#isModifierDown
+						? I18n.getMessage('popupCopyUniqueButtonTitle')
+						: I18n.getMessage('popupCopyButtonTitle');
+
+					const template = this.#isModifierDown
+						? this.#hashIconTemplate
+						: this.#copyIconTemplate;
+
+					buttonElement.title = title;
+					buttonElement.setAttribute('aria-label', title);
+
+					if (template) {
+						buttonElement.replaceChildren(template.content.cloneNode(true));
 					}
 				}, Feedback.DEFAULT_DURATION);
 			})
@@ -175,14 +237,25 @@ class PopupController {
 				copyButton.appendChild(this.#copyIconTemplate.content.cloneNode(true));
 			}
 
-			copyButton.addEventListener('click', () => {
-				this.#copyToClipboard(generatedEmail, copyButton);
+			copyButton.addEventListener('click', (event) => {
+				const isUnique = event.shiftKey;
+				let finalEmail = generatedEmail;
+
+				if (isUnique) {
+					finalEmail = `${prefix}${currentSiteIdentifier}.${Utils.generateEpochToken()}@${domainName}`;
+				}
+
+				this.#copyToClipboard(finalEmail, copyButton);
 			});
 
 			block.appendChild(emailText);
 			block.appendChild(copyButton);
 			this.#aliasListContainer.appendChild(block);
 		});
+
+		if (this.#isModifierDown) {
+			this.#updateButtonStates();
+		}
 	}
 }
 

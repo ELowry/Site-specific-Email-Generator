@@ -36,6 +36,9 @@ class OptionsController {
 	/** @type {number|null} */
 	#dragSourceIndex;
 
+	/** @type {boolean} */
+	#isModifierDown;
+
 	constructor() {
 		this.#newDomainInput = null;
 		this.#newPrefixInput = null;
@@ -47,6 +50,7 @@ class OptionsController {
 		this.#dragIconTemplate = null;
 		this.#domains = [];
 		this.#dragSourceIndex = null;
+		this.#isModifierDown = false;
 	}
 
 	/**
@@ -64,6 +68,20 @@ class OptionsController {
 		this.#includeTldToggle = document.querySelector('#IncludeTLDToggle');
 		this.#deleteIconTemplate = document.querySelector('#template-deleteIcon');
 		this.#dragIconTemplate = document.querySelector('#template-dragIcon');
+
+		document.addEventListener('keydown', (event) => {
+			if (event.key === 'Shift' && !this.#isModifierDown) {
+				this.#isModifierDown = true;
+				this.#updateTimestampVisuals();
+			}
+		});
+
+		document.addEventListener('keyup', (event) => {
+			if (event.key === 'Shift' && this.#isModifierDown) {
+				this.#isModifierDown = false;
+				this.#updateTimestampVisuals();
+			}
+		});
 
 		this.#setupEventListeners();
 		this.#restoreOptions();
@@ -122,7 +140,15 @@ class OptionsController {
 			siteIndicator.className = 'site-indicator';
 			siteIndicator.textContent = I18n.getMessage('optionsDomainSiteIndicator');
 
+			const timestampIndicator = document.createElement('span');
+			timestampIndicator.className = 'timestamp-indicator';
+
+			if (this.#isModifierDown) {
+				timestampIndicator.textContent = `.${Utils.generateEpochToken()}`;
+			}
+
 			entry.appendChild(siteIndicator);
+			entry.appendChild(timestampIndicator);
 			entry.appendChild(document.createTextNode(`@${domainName}`));
 
 			const deleteButton = document.createElement('button');
@@ -309,6 +335,24 @@ class OptionsController {
 		this.#domains.splice(index, 1);
 		this.render();
 		this.#saveDomains();
+	}
+
+	/**
+	 * Updates the visual timestamp indicators based on the modifier key state.
+	 * @private
+	 * @returns {void}
+	 */
+	#updateTimestampVisuals() {
+		const indicators = this.#domainListContainer?.querySelectorAll('.timestamp-indicator');
+		if (!indicators) {
+			return;
+		}
+
+		const token = this.#isModifierDown ? `.${Utils.generateEpochToken()}` : '';
+
+		indicators.forEach((element) => {
+			element.textContent = token;
+		});
 	}
 
 	/**

@@ -47,6 +47,14 @@ class UtilsController {
 
 		return includeTld ? parts.slice(parts.length - 2).join('.') : parts[parts.length - 2];
 	}
+
+	/**
+	 * Generates a base-36 timestamp token.
+	 * @returns {string} the epoch token.
+	 */
+	generateEpochToken() {
+		return Date.now().toString(36);
+	}
 }
 
 export const Utils = new UtilsController();

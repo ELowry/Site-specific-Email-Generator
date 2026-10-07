@@ -14,6 +14,15 @@ class ExtensionController {
 	/** @type {EventListener|null} */
 	#onLayoutChange = null;
 
+	/** @type {EventListener|null} */
+	#onKeyDown = null;
+
+	/** @type {EventListener|null} */
+	#onKeyUp = null;
+
+	/** @type {boolean} */
+	#isModifierDown = false;
+
 	/** @type {Object|null} */
 	#utils = null;
 
@@ -23,17 +32,35 @@ class ExtensionController {
 	/** @type {number} */
 	#domainIndex = 0;
 
+	/** @type {boolean} */
+	#hasMultipleDomains = false;
+
 	constructor() {
 		this.#hostElement = null;
 		this.#iconElement = null;
 		this.#activeInput = null;
+		this.#utils = null;
 		this.#i18n = null;
 		this.#domainIndex = 0;
+		this.#hasMultipleDomains = false;
+		this.#isModifierDown = false;
 		this.#onLayoutChange = () => {
 			if (this.#iconElement && this.#activeInput) {
 				requestAnimationFrame(() => {
 					this.#updateIconPosition();
 				});
+			}
+		};
+		this.#onKeyDown = (event) => {
+			if (event.key === 'Shift' && !this.#isModifierDown) {
+				this.#isModifierDown = true;
+				this.#updateIconState();
+			}
+		};
+		this.#onKeyUp = (event) => {
+			if (event.key === 'Shift' && this.#isModifierDown) {
+				this.#isModifierDown = false;
+				this.#updateIconState();
 			}
 		};
 	}
@@ -125,6 +152,13 @@ class ExtensionController {
 	&[data-theme='light']::after {
 		background-color: #6d0a1f;
 	}
+
+	&[data-shift='true']::after {
+		mask: url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><line x1="4" x2="20" y1="9" y2="9"/><line x1="4" x2="20" y1="15" y2="15"/><line x1="10" x2="8" y1="3" y2="21"/><line x1="16" x2="14" y1="3" y2="21"/></g></svg>')
+			no-repeat center;
+		-webkit-mask: url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><line x1="4" x2="20" y1="9" y2="9"/><line x1="4" x2="20" y1="15" y2="15"/><line x1="10" x2="8" y1="3" y2="21"/><line x1="16" x2="14" y1="3" y2="21"/></g></svg>')
+			no-repeat center;
+	}
 }
 		`;
 	}
@@ -151,6 +185,9 @@ class ExtensionController {
 		document.addEventListener('focusout', () => {
 			this.#handleFocusOut();
 		});
+
+		document.addEventListener('keydown', this.#onKeyDown);
+		document.addEventListener('keyup', this.#onKeyUp);
 
 		const checkExistingFocus = () => {
 			if (document.activeElement && document.activeElement !== document.body) {
@@ -267,19 +304,18 @@ class ExtensionController {
 			const style = document.createElement('style');
 			style.textContent = ExtensionController.SHADOW_CSS;
 
-			const icon = document.createElement('button');
-			icon.type = 'button';
-			icon.className = 'icon-wrapper';
-			icon.setAttribute('aria-label', this.#i18n.getMessage('contentScriptIconAriaLabel'));
-
 			const storage = await this.#utils.getStorage();
 			const result = await storage.get(['aliasDomains']);
 			const domains = result.aliasDomains || [];
 
-			icon.title =
-				domains.length > 1
-					? this.#i18n.getMessage('contentScriptIconTitleMultipleDomains')
-					: this.#i18n.getMessage('contentScriptIconTitleSingleDomain');
+			this.#hasMultipleDomains = domains.length > 1;
+
+			const icon = document.createElement('button');
+			icon.type = 'button';
+			icon.className = 'icon-wrapper';
+			this.#iconElement = icon;
+
+			this.#updateIconState();
 
 			const handleTrigger = async (event) => {
 				event.preventDefault();
@@ -295,11 +331,14 @@ class ExtensionController {
 					const prefix = currentDomainData.prefix || '';
 					const includeTld = currentResult.includeTld !== false;
 
+					const isUnique = event.shiftKey;
+
 					this.triggerAliasInjection(domainName, {
 						prefix,
 						includeTld,
 						targetInput: this.#activeInput,
 						closeIcon: currentDomains.length === 1,
+						isUnique,
 					});
 
 					this.#domainIndex = (this.#domainIndex + 1) % currentDomains.length;
@@ -368,6 +407,37 @@ class ExtensionController {
 	}
 
 	/**
+	 * Updates the icon's visual state and accessibility attributes based on modifiers.
+	 * @private
+	 * @returns {void}
+	 */
+	#updateIconState() {
+		if (!this.#iconElement) {
+			return;
+		}
+
+		if (this.#isModifierDown) {
+			this.#iconElement.setAttribute('data-shift', 'true');
+			this.#iconElement.setAttribute(
+				'aria-label',
+				this.#i18n.getMessage('contentScriptIconUniqueAriaLabel')
+			);
+			this.#iconElement.title = this.#hasMultipleDomains
+				? this.#i18n.getMessage('contentScriptIconUniqueTitleMultipleDomains')
+				: this.#i18n.getMessage('contentScriptIconUniqueTitleSingleDomain');
+		} else {
+			this.#iconElement.removeAttribute('data-shift');
+			this.#iconElement.setAttribute(
+				'aria-label',
+				this.#i18n.getMessage('contentScriptIconAriaLabel')
+			);
+			this.#iconElement.title = this.#hasMultipleDomains
+				? this.#i18n.getMessage('contentScriptIconTitleMultipleDomains')
+				: this.#i18n.getMessage('contentScriptIconTitleSingleDomain');
+		}
+	}
+
+	/**
 	 * Handles extension messages.
 	 * @private
 	 * @param {object} message - Message payload.
@@ -379,6 +449,7 @@ class ExtensionController {
 				prefix: message.prefix,
 				includeTld: message.includeTld,
 				targetInput: document.activeElement,
+				isUnique: Boolean(message.isUnique),
 			});
 		}
 	}
@@ -445,11 +516,18 @@ class ExtensionController {
 	 * @param {boolean} [options.includeTld=true] - Whether to include the TLD.
 	 * @param {Element|null} [options.targetInput=null] - Target element.
 	 * @param {boolean} [options.closeIcon=true] - Whether to dismiss the icon after injection.
+	 * @param {boolean} [options.isUnique=false] - Whether to append a unique epoch token.
 	 * @returns {void}
 	 */
 	triggerAliasInjection(
 		domain,
-		{ prefix = '', includeTld = true, targetInput = null, closeIcon = true } = {}
+		{
+			prefix = '',
+			includeTld = true,
+			targetInput = null,
+			closeIcon = true,
+			isUnique = false,
+		} = {}
 	) {
 		const initialTarget = targetInput || document.activeElement;
 		const target = this.#findClosestInput(initialTarget);
@@ -463,10 +541,15 @@ class ExtensionController {
 		}
 
 		try {
-			const siteIdentifier = this.#utils.parseDomainContext(
+			let siteIdentifier = this.#utils.parseDomainContext(
 				window.location.hostname,
 				includeTld
 			);
+
+			if (isUnique) {
+				siteIdentifier = `${siteIdentifier}.${this.#utils.generateEpochToken()}`;
+			}
+
 			target.value = `${prefix}${siteIdentifier}@${domain}`;
 			target.dispatchEvent(new Event('input', { bubbles: true }));
 			target.dispatchEvent(new Event('change', { bubbles: true }));
