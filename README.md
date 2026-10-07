@@ -34,9 +34,9 @@ This Firefox extension helps you easily sign up anywhere with a dedicated email 
 - Desktop: **[Download it from the Firefox Add-ons store](https://addons.mozilla.org/addon/site-specific-email-generator/)**.
 - Android: **[Download it from the Firefox Add-ons store](https://addons.mozilla.org/android/addon/site-specific-email-generator/)**.
 
-1. Open the extension's **Options** page (click the gear icon in the toolbar popup or right-click the extension icon and select "Manage Extension").
+1. Open the extension's **Options** page by right-clicking the extension icon in the toolbar and selecting `Manage Extension`→`⋯`→`Options`.
 2. Enter your custom **Domain name** (e.g., `yourdomain.com`) and optional **prefix**.
-3. Click the **+** button to add the domain to your saved list.
+3. Click the `+` button to add the domain to your saved list.
 
 ## Usage
 
