@@ -1,1 +1,150 @@
-{}
+{
+	"extensionDescription": {
+		"message": "Proteja sua caixa de entrada real gerando e preenchendo instantaneamente endereços de e-mail exclusivos para cada site usando seu domínio pessoal."
+	},
+	"optionsPageTitle": {
+		"message": "Configurações do Email Generator"
+	},
+	"optionsHeaderTitle": {
+		"message": "Email Generator"
+	},
+	"optionsHeaderSubtitle": {
+		"message": "Gerencie seus domínios personalizados para geração inteligente de e-mails."
+	},
+	"optionsSettingsHeader": {
+		"message": "Configurações da extensão"
+	},
+	"optionsSyncToggleLabel": {
+		"message": "Ativar Firefox Sync (sincronizar configurações entre dispositivos)"
+	},
+	"optionsIncludeTldToggleLabel": {
+		"message": "Incluir TLD no alias (netflix -> netflix.com)"
+	},
+	"optionsDomainsHeader": {
+		"message": "Configuração de domínio"
+	},
+	"optionsDomainsDescription": {
+		"message": "Adicione os domínios que deseja usar para seus aliases de e-mail."
+	},
+	"optionsPrefixInputPlaceholder": {
+		"message": "Prefixo"
+	},
+	"optionsPrefixInputTitle": {
+		"message": "Apenas letras, números, pontos, sublinhados, hifens e sinais de adição são permitidos."
+	},
+	"optionsPrefixOptionalSuffix": {
+		"message": "Opcional"
+	},
+	"optionsDomainInputPlaceholder": {
+		"message": "Nome de domínio"
+	},
+	"optionsDomainInputTitle": {
+		"message": "Insira um nome de domínio válido (ex.: exemplo.com)"
+	},
+	"optionsAddDomainButtonAria": {
+		"message": "Adicionar domínio"
+	},
+	"optionsDomainListEmptyState": {
+		"message": "Nenhum domínio configurado. Adicione seu primeiro domínio abaixo."
+	},
+	"optionsDomainSiteIndicator": {
+		"message": "[site]"
+	},
+	"optionsDeleteDomainButtonTitle": {
+		"message": "Excluir domínio"
+	},
+	"optionsDeleteDomainButtonAria": {
+		"message": "Excluir $DOMAIN$",
+		"placeholders": {
+			"domain": {
+				"content": "$1",
+				"example": "example.com"
+			}
+		}
+	},
+	"messageDomainsUpdatedSuccess": {
+		"message": "Domínios atualizados"
+	},
+	"messageEnterDomainError": {
+		"message": "Insira um domínio"
+	},
+	"messageDomainExistsError": {
+		"message": "A combinação de domínio e prefixo já existe"
+	},
+	"messageSettingsSavedSuccess": {
+		"message": "Configurações salvas"
+	},
+	"messageSyncEnabledSuccess": {
+		"message": "Sincronização ativada (dados mesclados)"
+	},
+	"messageSyncDisabledSuccess": {
+		"message": "Sincronização desativada (dados mesclados)"
+	},
+	"popupHeaderTitle": {
+		"message": "Email Generator"
+	},
+	"popupSettingsButtonAria": {
+		"message": "Abrir configurações"
+	},
+	"popupEmptyStateMessage": {
+		"message": "Nenhum domínio configurado."
+	},
+	"popupGoToSettingsButton": {
+		"message": "Ir para configurações"
+	},
+	"popupCopyButtonTitle": {
+		"message": "Copiar para a área de transferência"
+	},
+	"messageCopiedToClipboardSuccess": {
+		"message": "Copiado para a área de transferência!"
+	},
+	"messageCopyToClipboardFailedError": {
+		"message": "Falha ao copiar"
+	},
+	"backgroundMenuConfigureSettings": {
+		"message": "Configurar aliases de e-mail…"
+	},
+	"backgroundMenuGenerateAliasWithPrefix": {
+		"message": "Gerar alias ($PREFIX$[site]@$DOMAIN$)",
+		"placeholders": {
+			"prefix": {
+				"content": "$1",
+				"example": "spam."
+			},
+			"domain": {
+				"content": "$2",
+				"example": "example.com"
+			}
+		}
+	},
+	"backgroundMenuGenerateAlias": {
+		"message": "Gerar alias de e-mail"
+	},
+	"contentScriptIconAriaLabel": {
+		"message": "Gerar alias de e-mail"
+	},
+	"contentScriptIconTitleMultipleDomains": {
+		"message": "Gerar alias (clique ou pressione Enter para alternar as opções)"
+	},
+	"contentScriptIconTitleSingleDomain": {
+		"message": "Gerar alias de e-mail"
+	},
+	"optionsDomainsTip": {
+		"message": "Mantenha pressionada a tecla <kbd>Shift</kbd> ao gerar ou copiar um e-mail para incluir um valor <i>aleatório</i> após o identificador do site."
+	},
+	"optionsTipTitle": {
+		"message": "Dica"
+	},
+	"popupCopyUniqueButtonTitle": {
+		"message": "Copiar com ID exclusivo"
+	},
+	"contentScriptIconUniqueAriaLabel": {
+		"message": "Gerar alias de e-mail exclusivo"
+	},
+	"contentScriptIconUniqueTitleMultipleDomains": {
+		"message": "Gerar alias exclusivo (clique ou pressione Enter para alternar as opções)"
+	},
+	"contentScriptIconUniqueTitleSingleDomain": {
+		"message": "Gerar alias de e-mail exclusivo"
+	}
+}
